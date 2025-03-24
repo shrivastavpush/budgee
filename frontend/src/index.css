@@ -18,3 +18,11 @@
         overflow-x: hidden;
     }
 }
+
+.input-box {
+    @apply w-full flex justify-between gap-3 text-sm text-black bg-slate-100 rounded px-4 py-3 mb-4 mt-3 border border-slate-200 outline-none;
+}
+
+.btn-primary {
+    @apply w-full text-sm font-medium text-white bg-orange-400 shadow-lg shadow-yellow-600/5 p-[10px] cursor-pointer rounded-md my-1 hover:bg-orange-500/30 hover:text-orange-600
+}
