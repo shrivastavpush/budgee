@@ -12,6 +12,10 @@ import { IoMdCard } from 'react-icons/io'
 
 import RecentTransactions from '../../components/Dashboard/RecentTransactions'
 import FinanceOverview from '../../components/Dashboard/FinanceOverview'
+import ExpenseTransactoins from '../../components/Dashboard/ExpenseTransactoins'
+import IncomeTransactoins from '../../components/Dashboard/IncomeTransactoins'
+import Last30DayExpenses from '../../components/Dashboard/Last30DayExpenses'
+import RecentIncomeWithChart from '../../components/Dashboard/RecentIncomeWithChart'
 
 const Home = () => {
     useUserAuth()
@@ -81,6 +85,22 @@ const Home = () => {
                         totalIncome={dashboardData?.totalIncome || 0}
                         totalExpense={dashboardData?.totalExpense || 0}
                     />
+
+                    <ExpenseTransactoins
+                        transactions={dashboardData?.last30DaysExpenses?.transactions || []} onSeeMore={() => navigate('/expense')} />
+
+                    {/* need to create/fix this barChart */}
+                    <Last30DayExpenses
+                        data={dashboardData?.last30DaysExpenses?.transactions || []}
+                    />
+
+                    <RecentIncomeWithChart
+                        data={dashboardData?.last60DaysIncome?.transactions?.slice(0, 4) || []}
+                        totalIncome={dashboardData?.totalIncome || 0}
+                    />
+
+                    <IncomeTransactoins
+                        transactions={dashboardData?.last60DaysIncome?.transactions || []} onSeeMore={() => navigate('/income')} />
                 </div>
             </div>
         </DashboardLayout>

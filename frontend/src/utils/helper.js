@@ -35,3 +35,12 @@ export const addThousandSeparator = (num) => {
         ? `${formattedInteger}.${fractionalPart}`
         : formattedInteger;
 }
+
+export const prepareExpsenseChartData = (data = []) => {
+    const chartData = data.map((item) => ({
+        category: item?.category,
+        amount: item?.amount,
+    }))
+
+    return chartData
+}
