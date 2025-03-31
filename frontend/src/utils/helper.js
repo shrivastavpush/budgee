@@ -48,14 +48,30 @@ export const prepareExpsenseChartData = (data = []) => {
 }
 
 export const prepareIncomeBarCharData = (data = []) => {
-
-    const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date))
+    const sortedData = [...data].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
 
     const chartData = sortedData.map((item) => ({
-        month: moment(item?.date).format('Do MMM'),
+        month: moment(item?.date).format('D-MMM-YYYY'),
         category: item?.source,
         amount: item?.amount,
-    }))
+    }));
 
-    return chartData
+    return chartData;
 }
+
+export const prepareExpenseLineChartData = (data = []) => {
+    const sortedData = [...data].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const chartData = sortedData.map((item) => ({
+        month: moment(item?.date).format('D-MMM-YYYY'),
+        category: item?.category,
+        amount: item?.amount,
+    }));
+
+    return chartData;
+};
+

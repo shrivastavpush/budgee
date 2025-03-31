@@ -17,12 +17,12 @@ const Income = () => {
 
     const [incomeData, setIncomeData] = useState([])
     const [loading, setLoading] = useState(false)
+    const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
     const [openDeleteAlert, setOpenDeleteAlert] = useState({
         show: false,
         data: null
     })
 
-    const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
 
     // Get all Income Details
     const fetchIncomeDetails = async () => {
