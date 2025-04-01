@@ -18,9 +18,11 @@ router.post("/upload-image", upload.single('image'), (req, res) => {
         return res.status(400).json({ message: "No file uploaded" })
     }
 
+    const backendUrl = process.env.BACKEND_URL || "https://budgee-backend.onrender.com"
+
     // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
-    // const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${encodeURIComponent(req.file.filename)}`
-    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`
+
+    const imageUrl = `${backendUrl}/uploads/${req.file.filename}`
 
     res.status(200).json({ imageUrl })
 })
