@@ -3,6 +3,7 @@ import { SIDE_MENU_DATA } from '../../utils/data'
 import { UserContext } from '../../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import CharAvatar from '../Cards/CharAvatar'
+import { toast } from 'react-hot-toast'
 
 const SideMenu = ({ activeMenu }) => {
     const { user, clearUser } = useContext(UserContext)
@@ -12,6 +13,7 @@ const SideMenu = ({ activeMenu }) => {
     const handleClick = (route) => {
         if (route === "logout") {
             handleLogout()
+            toast.success("Logged out successfully")
             return
         }
 
@@ -46,7 +48,7 @@ const SideMenu = ({ activeMenu }) => {
                 SIDE_MENU_DATA.map((item, index) => {
                     return <button
                         key={`menu_${index}`}
-                        className={`w-full flex items-center gap-4 text-[15px] ${activeMenu == item.label ? "text-white bg-primary" : ""} py-3 px-6 rounded-lg mb-3 cursor-pointer hover:bg-purple-100 hover:text-primary`}
+                        className={`w-full flex items-center gap-4 text-[15px] ${activeMenu == item.label ? "text-white bg-teal-500" : ""} py-3 px-6 rounded-lg mb-3 cursor-pointer hover:bg-teal-100 hover:text-teal-400`}
                         onClick={() => handleClick(item.path)}>
                         <item.icon className='text-xl' />
                         {item.label}
