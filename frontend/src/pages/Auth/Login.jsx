@@ -6,30 +6,35 @@ import { validateEmail } from '../../utils/helper'
 import axiosInsance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
 import { UserContext } from '../../context/UserContext'
+import toast from 'react-hot-toast'
+import { LuLoader } from 'react-icons/lu'
 
 const Login = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
     const { updateUser } = useContext(UserContext)
-
     const navigate = useNavigate()
 
     const handleLogin = async (e) => {
         e.preventDefault()
 
         if (!validateEmail(email)) {
-            setError("Please enter a valid email address")
+            // setError("Please enter a valid email address")
+            toast.error("Please enter a valid email address")
             return
         }
 
         if (!password) {
-            setError("Please enter the password")
+            // setError("Please enter the password")
+            toast.error("Please enter the password")
             return
         }
 
         setError("")
+        setIsLoading(true)
 
         // Login API Call
         try {
@@ -44,13 +49,18 @@ const Login = () => {
                 localStorage.setItem("token", token)
                 updateUser(user)
                 navigate('/dashboard')
+                toast.success("Login successful")
             }
         } catch (error) {
             if (error.response && error.response.data.message) {
-                setError(error.response.data.message)
+                // setError(error.response.data.message)
+                toast.error(error.response.data.message)
             } else {
-                setError("Something went wrong. Please try again.")
+                // setError("Something went wrong. Please try again.")
+                toast.error("Something went wrong. Please try again.")
             }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -79,12 +89,25 @@ const Login = () => {
                         <p className='text-red-500 text-xs pb-2.5'>{error}</p>
                     }
 
-                    <button type='submit' className='btn-primary'>LOGIN</button>
+                    <button
+                        type='submit'
+                        className='btn-primary flex items-center justify-center gap-2'
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <LuLoader className="animate-spin" />
+                                <span>Logging in...</span>
+                            </>
+                        ) : (
+                            'LOGIN'
+                        )}
+                    </button>
 
                     <p className='text-[13px] text-slate-800 mt-3'>
                         Don't have an account ? {''}
                         <Link
-                            className='font-medium text-primary underline' to='/signup'
+                            className='font-medium text-teal-400 underline' to='/signup'
                         >SignUp
                         </Link>
                     </p>

@@ -8,6 +8,8 @@ import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
 import { UserContext } from '../../context/UserContext'
 import uploadImage from '../../utils/uploadImage'
+import toast from 'react-hot-toast'
+import { LuLoader } from 'react-icons/lu'
 
 const SignUp = () => {
     const [profilePic, setProfilePic] = useState(null)
@@ -15,6 +17,7 @@ const SignUp = () => {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
 
     const { updateUser } = useContext(UserContext)
     const navigate = useNavigate()
@@ -26,25 +29,28 @@ const SignUp = () => {
         let profileImageUrl = ""
 
         if (!fullName) {
-            setError("Please enter your name")
+            // setError("Please enter your name")
+            toast.error("Please enter your name")
             return
         }
 
         if (!validateEmail(email)) {
-            setError("Please enter a valid email address")
+            // setError("Please enter a valid email address")
+            toast.error("Please enter a valid email address")
             return
         }
 
         if (!password) {
-            setError("Please enter the password")
+            // setError("Please enter the password")
+            toast.error("Please enter the password")
             return
         }
 
         setError("")
+        setIsLoading(true)
 
         // Signup API Call
         try {
-
             //Uploading image if available
             if (profilePic) {
                 const imageUploadRes = await uploadImage(profilePic)
@@ -63,14 +69,18 @@ const SignUp = () => {
                 localStorage.setItem("token", token)
                 updateUser(user)
                 navigate('/dashboard')
+                toast.success("Signup successful")
             }
 
         } catch (error) {
             if (error.response && error.response.data.message) {
                 setError(error.response.data.message)
             } else {
-                setError("Something went wrong. Please try again.")
+                // setError("Something went wrong. Please try again.")
+                toast.error("Something went wrong. Please try again.")
             }
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -88,14 +98,20 @@ const SignUp = () => {
                     <div className="grid grid-cols-3 md:grid-cols-2 gap-x-4">
                         <Input
                             value={fullName}
-                            onChange={({ target }) => setFullName(target.value)}
+                            onChange={({ target }) => {
+                                setFullName(target.value)
+                                setError("")
+                            }}
                             label="Full Name"
                             placeholder="Enter your name"
                             type="text" />
 
                         <Input
                             value={email}
-                            onChange={({ target }) => setEmail(target.value)}
+                            onChange={({ target }) => {
+                                setEmail(target.value)
+                                setError("")
+                            }}
                             label="Email Address"
                             placeholder="email@example.com"
                             type="text" />
@@ -103,23 +119,39 @@ const SignUp = () => {
                         <div className="col-span-2">
                             <Input
                                 value={password}
-                                onChange={({ target }) => setPassword(target.value)}
+                                onChange={({ target }) => {
+                                    setPassword(target.value)
+                                    setError("")
+                                }}
                                 label="Password"
                                 placeholder="Min 8 Characters"
                                 type="password" />
                         </div>
                     </div>
 
-                    {error &&
+                    {/* {error &&
                         <p className='text-red-500 text-xs pb-2.5'>{error}</p>
-                    }
+                    } */}
 
-                    <button type='submit' className='btn-primary'>SIGN UP</button>
+                    <button
+                        type='submit'
+                        className='btn-primary flex items-center justify-center gap-2'
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            <>
+                                <LuLoader className="animate-spin" />
+                                <span>Signing up...</span>
+                            </>
+                        ) : (
+                            'SIGN UP'
+                        )}
+                    </button>
 
                     <p className='text-[13px] text-slate-800 mt-3'>
                         Already have an account ? {''}
                         <Link
-                            className='font-medium text-primary underline' to='/login'
+                            className='font-medium text-teal-400 underline' to='/login'
                         >Login
                         </Link>
                     </p>
