@@ -1,16 +1,20 @@
 import React from 'react'
 import CARD_2 from '../../assets/images/banner-img.jpg'
 import { LuTrendingUpDown } from 'react-icons/lu'
+import LOGO from '../../assets/Budgee.svg'
 
 const AuthLayout = ({ children }) => {
     return (
         <div className='flex items-center justify-between'>
-            <div className='w-screen h-screen md:w-[60vw] px-12 pb-12'>
-                <h2 className='text-lg font-medium text-black'>Budgee - Your Expense Manager Buddy</h2>
+            <div className='w-screen h-screen md:w-[50vw] p-12 flex flex-col justify-between'>
+                <div className='flex items-center gap-2 flex-col'>
+                    <img src={LOGO} alt="Budgee Logo" className='w-40 h-40' />
+                    <h2 className='text-2xl font-semibold text-black'>Your Expense Manager Buddy</h2>
+                </div>
                 {children}
             </div>
 
-            <div className='hidden md:block w-[40vw] h-screen bg-violet-50 bg-auth-bg-img bg-cover bg-no-repeat bg-center overflow-hidden p-8 relative'>
+            <div className='hidden md:block w-[50vw] h-screen bg-violet-50 bg-auth-bg-img bg-cover bg-no-repeat bg-center overflow-hidden p-8 relative'>
                 <div className='w-48 h-48 absolute rounded-[40px] bg-orange-200 -top-7 -left-5' />
                 <div className='w-48 h-56 absolute rounded-[40px] border-orange-500 border-[20px] top-[30%] -right-10' />
                 <div className='w-48 h-48 absolute rounded-[40px] bg-yellow-500 -bottom-7 -left-5' />
