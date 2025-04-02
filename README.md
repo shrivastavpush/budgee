@@ -12,7 +12,7 @@
 
 A modern, secure, and intuitive personal finance management application that helps users track their income, expenses, and financial goals.
 
-[Live Demo](https://budgee-rho.vercel.app) · [Report Bug](https://github.com/yourusername/budgee/issues) · [Request Feature](https://github.com/yourusername/budgee/issues)
+[Live Demo](https://budgee-rho.vercel.app) · [Report Bug](https://github.com/shrivastavpush/budgee/issues) · [Request Feature](https://github.com/shrivastavpush/budgee/issues)
 
 </div>
 
@@ -23,10 +23,9 @@ A modern, secure, and intuitive personal finance management application that hel
 - [Tech Stack](#-tech-stack)
 - [Getting Started](#-getting-started)
 - [Installation](#-installation)
-- [Usage](#-usage)
 - [API Documentation](#-api-documentation)
 - [Contributing](#-contributing)
-- [License](#-license)
+- [Authors](#-authors)
 
 ## 🎯 About The Project
 
@@ -40,20 +39,33 @@ Budgee is a comprehensive personal finance management application designed to he
 - 💾 **Data Export**: Excel export functionality
 - 🔄 **Real-time Updates**: Instant data synchronization
 
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
-
 ## ✨ Features
 
 ### Core Features
 
 - 🔐 **Secure User Authentication**
+  - JWT-based authentication
+  - Protected routes
+  - Secure password handling
 - 👤 **Profile Management**
+  - Custom profile image upload
+  - User information management
 - 💰 **Income Management**
+  - Add, edit, and delete income entries
+  - Categorize income sources
+  - Track recurring income
 - 💸 **Expense Tracking**
+  - Category-based expense tracking
+  - Custom categories support
+  - Expense analytics
 - 📊 **Interactive Dashboard**
+  - Bar Charts for Monthly Comparisons
+  - Pie Charts for Category Distribution
+  - Line Charts for Trend Analysis
 - 📥 **Data Export**
-
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+  - Excel export for income
+  - Excel export for expenses
+  - Custom date range selection
 
 ## 🛠️ Tech Stack
 
@@ -65,6 +77,8 @@ Budgee is a comprehensive personal finance management application designed to he
 - **Data Visualization**: Recharts, Chart.js
 - **HTTP Client**: Axios
 - **Routing**: React Router v6
+- **UI Components**: React Icons, Custom Components
+- **Date Handling**: Moment.js
 - **Authentication**: JWT
 
 ### Backend
@@ -73,9 +87,10 @@ Budgee is a comprehensive personal finance management application designed to he
 - **Framework**: Express.js
 - **Database**: MongoDB with Mongoose
 - **Authentication**: JWT
+- **File Upload**: Multer
+- **Data Export**: XLSX
 - **Security**: CORS, Rate Limiting
-
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+- **Environment**: dotenv
 
 ## 🚀 Getting Started
 
@@ -90,7 +105,7 @@ Budgee is a comprehensive personal finance management application designed to he
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/yourusername/budgee.git
+   git clone https://github.com/shrivastavpush/budgee.git
    cd budgee
    ```
 
@@ -101,6 +116,15 @@ Budgee is a comprehensive personal finance management application designed to he
    npm install
    ```
 
+   Create `.env` file:
+
+   ```
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   BACKEND_URL=http://localhost:8000
+   PORT=8000
+   ```
+
 3. **Frontend Setup**
 
    ```bash
@@ -108,19 +132,50 @@ Budgee is a comprehensive personal finance management application designed to he
    npm install
    ```
 
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+   Create `.env` file:
+
+   ```
+   VITE_API_URL=http://localhost:8000
+   ```
+
+4. **Start the Application**
+
+   ```bash
+   # Start Backend (from backend directory)
+   npm run dev
+
+   # Start Frontend (from frontend directory)
+   npm run dev
+   ```
 
 ## 📚 API Documentation
 
 ### Authentication Endpoints
 
-| Method | Endpoint                | Description          |
-| ------ | ----------------------- | -------------------- |
-| POST   | `/api/v1/auth/register` | Register a new user  |
-| POST   | `/api/v1/auth/login`    | Authenticate user    |
-| GET    | `/api/v1/auth/getUser`  | Get user information |
+| Method | Endpoint                    | Description          |
+| ------ | --------------------------- | -------------------- |
+| POST   | `/api/v1/auth/register`     | Register a new user  |
+| POST   | `/api/v1/auth/login`        | Authenticate user    |
+| GET    | `/api/v1/auth/getUser`      | Get user information |
+| POST   | `/api/v1/auth/upload-image` | Upload profile image |
 
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+### Income Endpoints
+
+| Method | Endpoint                       | Description              |
+| ------ | ------------------------------ | ------------------------ |
+| POST   | `/api/v1/income/add`           | Add new income           |
+| GET    | `/api/v1/income/get`           | Get all income entries   |
+| DELETE | `/api/v1/income/:id`           | Delete income entry      |
+| GET    | `/api/v1/income/downloadexcel` | Download income as Excel |
+
+### Expense Endpoints
+
+| Method | Endpoint                        | Description                |
+| ------ | ------------------------------- | -------------------------- |
+| POST   | `/api/v1/expense/add`           | Add new expense            |
+| GET    | `/api/v1/expense/get`           | Get all expense entries    |
+| DELETE | `/api/v1/expense/:id`           | Delete expense entry       |
+| GET    | `/api/v1/expense/downloadexcel` | Download expenses as Excel |
 
 ## 🤝 Contributing
 
@@ -132,10 +187,13 @@ We welcome contributions! Please follow these steps:
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+### Development Guidelines
+
+- Follow the existing code style
+- Write meaningful commit messages
+- Update documentation as needed
+- Test your changes thoroughly
 
 ## 👥 Authors
 
-**Pushpendra Shrivastav** - [YourGithub](https://github.com/shrivastavpush)
-
-[Back to Top ⬆️](#budgee---personal-finance-management-application)
+**Pushpendra Shrivastav** - [GitHub](https://github.com/shrivastavpush)
