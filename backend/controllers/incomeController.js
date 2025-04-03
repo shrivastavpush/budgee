@@ -1,5 +1,7 @@
 const xlsx = require('xlsx')
 const Income = require('../models/Income')
+const { clearCache } = require('../config/cache')
+const { clearDashboardCache } = require('./dashboardController')
 
 // add income
 exports.addIncome = async (req, res) => {
@@ -25,6 +27,12 @@ exports.addIncome = async (req, res) => {
         })
 
         await newIncome.save()
+
+        // Clear cache for income routes and dashboard
+        clearCache('/api/v1/income')
+        clearCache(`/api/v1/income/${userId}`)
+        clearDashboardCache(userId)
+
         res.status(200).json(newIncome)
 
     } catch (error) {
@@ -58,7 +66,18 @@ exports.deleteIncome = async (req, res) => {
     // }
 
     try {
+        const income = await Income.findById(req.params.id)
+        if (!income) {
+            return res.status(404).json({ message: "Income not found" })
+        }
+
         await Income.findByIdAndDelete(req.params.id)
+
+        // Clear cache for income routes and dashboard
+        clearCache('/api/v1/income')
+        clearCache(`/api/v1/income/${income.userId}`)
+        clearDashboardCache(income.userId)
+
         res.json({ message: "Income deleted successfully" });
     } catch (error) {
         // console.error("Error adding income:", error);
