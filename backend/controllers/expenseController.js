@@ -1,7 +1,5 @@
 const xlsx = require('xlsx')
 const Expense = require('../models/Expense')
-const { clearCache } = require('../config/cache')
-const { clearDashboardCache } = require('./dashboardController')
 
 // add Expense
 exports.addExpense = async (req, res) => {
@@ -27,12 +25,6 @@ exports.addExpense = async (req, res) => {
         })
 
         await newExpense.save()
-
-        // Clear cache for expense routes and dashboard
-        clearCache('/api/v1/expense')
-        clearCache(`/api/v1/expense/${userId}`)
-        clearDashboardCache(userId)
-
         res.status(200).json(newExpense)
 
     } catch (error) {
@@ -61,18 +53,7 @@ exports.getAllExpense = async (req, res) => {
 // delete Expense
 exports.deleteExpense = async (req, res) => {
     try {
-        const expense = await Expense.findById(req.params.id)
-        if (!expense) {
-            return res.status(404).json({ message: "Expense not found" })
-        }
-
         await Expense.findByIdAndDelete(req.params.id)
-
-        // Clear cache for expense routes and dashboard
-        clearCache('/api/v1/expense')
-        clearCache(`/api/v1/expense/${expense.userId}`)
-        clearDashboardCache(expense.userId)
-
         res.json({ message: "Expense deleted successfully" });
     } catch (error) {
         // console.error("Error adding Expense:", error);
