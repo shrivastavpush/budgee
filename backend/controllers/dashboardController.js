@@ -1,6 +1,7 @@
 const Income = require('../models/Income')
 const Expense = require('../models/Expense')
 const { isValidObjectId, Types } = require('mongoose')
+const { clearCache } = require('../config/cache')
 
 //Dashboard Data
 exports.getDashboardData = async (req, res) => {
@@ -106,7 +107,7 @@ exports.getDashboardData = async (req, res) => {
             .sort((a, b) => new Date(b.date) - new Date(a.date))
 
         // Prepare response
-        res.json({
+        const response = {
             totalBalance: (totalIncome[0]?.total || 0) - (totalExpense[0]?.total || 0),
             totalIncome: totalIncome[0]?.total || 0,
             totalExpense: totalExpense[0]?.total || 0,
@@ -119,9 +120,17 @@ exports.getDashboardData = async (req, res) => {
                 transactions: last60DaysIncome[0]?.transactions || []
             },
             recentTransactions: allRecentTransactions
-        })
+        }
+
+        res.json(response)
     } catch (error) {
         console.error('Dashboard data error:', error)
         res.status(500).json({ message: 'Server Error', error })
     }
+}
+
+// Function to clear dashboard cache when income or expense is modified
+exports.clearDashboardCache = (userId) => {
+    clearCache('/api/v1/dashboard')
+    clearCache(`/api/v1/dashboard/${userId}`)
 }
