@@ -39,7 +39,12 @@ export const addThousandSeparator = (num) => {
 }
 
 export const prepareExpsenseChartData = (data = []) => {
-    const chartData = data.map((item) => ({
+    const sortedData = [...data].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    const chartData = sortedData.map((item) => ({
+        month: moment(item?.date).format('D-MMM-YYYY'),
         category: item?.category,
         amount: item?.amount,
     }))

@@ -1,10 +1,10 @@
 import React from 'react'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 
-const CustomBarChart = ({ data }) => {
+const CustomBarChart = ({ data = [], color1, color2 }) => {
 
     const getBarColor = (index) => {
-        return index % 2 === 0 ? '#875cf5' : '#cfbefb'
+        return index % 2 === 0 ? color1 : color2
     }
 
     const CustomTooltip = ({ active, payload }) => {

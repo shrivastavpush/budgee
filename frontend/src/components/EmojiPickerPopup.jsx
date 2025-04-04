@@ -11,7 +11,7 @@ const EmojiPickerPopup = ({ icon, onSelect }) => {
                 className='flex items-center gap-4 cursor-pointer'
                 onClick={() => setIsOpen(true)}>
 
-                <div className={`w-12 h-12 flex items-center justify-center text-2xl rounded-lg ${icon ? '' : 'bg-purple-100 text-primary'}`}>
+                <div className={`w-12 h-12 flex items-center justify-center text-2xl rounded-lg ${icon ? '' : 'bg-teal-100 text-teal-600'}`}>
                     {icon
                         ? <img
                             src={icon}

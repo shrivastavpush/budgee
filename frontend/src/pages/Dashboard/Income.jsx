@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useUserAuth } from '../../hooks/useUserAuth'
 import DashboardLayout from '../../components/layouts/DashboardLayout'
 
 import axiosInstance from '../../utils/axiosInstance'
@@ -12,8 +13,8 @@ import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
 import { toast } from 'react-hot-toast'
 
-
 const Income = () => {
+    useUserAuth()
 
     const [incomeData, setIncomeData] = useState([])
     const [loading, setLoading] = useState(false)
@@ -22,7 +23,6 @@ const Income = () => {
         show: false,
         data: null
     })
-
 
     // Get all Income Details
     const fetchIncomeDetails = async () => {

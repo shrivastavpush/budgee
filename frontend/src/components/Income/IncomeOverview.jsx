@@ -22,15 +22,13 @@ const IncomeOverview = ({ transactions, onAddIncome }) => {
                     <p className='text-sm text-gray-400 mt-0.5'>Track your earnings over time and analyze your income trends</p>
                 </div>
 
-
                 <button onClick={onAddIncome} className="add-btn">
                     <LuPlus className='text-lg' /> Add Income
                 </button>
             </div>
 
-
             <div className='mt-10'>
-                <CustomBarChart data={chartData} />
+                <CustomBarChart data={chartData} color1="#15803D" color2="#22C55E" />
             </div>
         </div>
     )

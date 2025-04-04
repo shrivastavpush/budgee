@@ -56,14 +56,14 @@ const Home = () => {
                         icon={<IoMdCard />}
                         label="Total Balance"
                         value={addThousandSeparator(dashboardData?.totalBalance || 0)}
-                        color="bg-primary"
+                        color="bg-violet-500"
                     />
 
                     <InfoCard
                         icon={<LuWalletMinimal />}
                         label="Total Income"
                         value={addThousandSeparator(dashboardData?.totalIncome || 0)}
-                        color="bg-orange-500"
+                        color="bg-green-500"
                     />
 
                     <InfoCard
@@ -89,7 +89,6 @@ const Home = () => {
                     <ExpenseTransactoins
                         transactions={dashboardData?.last30DaysExpenses?.transactions || []} onSeeMore={() => navigate('/expense')} />
 
-                    {/* need to create/fix this barChart */}
                     <Last30DayExpenses
                         data={dashboardData?.last30DaysExpenses?.transactions || []}
                     />

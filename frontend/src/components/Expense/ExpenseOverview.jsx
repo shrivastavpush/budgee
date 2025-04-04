@@ -28,7 +28,7 @@ const ExpenseOverview = ({ transactions, onAddExpense }) => {
 
 
             <div className='mt-10'>
-                <CustomLineChart data={chartData} />
+                <CustomLineChart data={chartData} stopColor="#B91C1C" fillColor="#EF4444" />
             </div>
         </div>
     )

@@ -12,15 +12,14 @@ const Last30DayExpenses = ({ data }) => {
         return () => { }
     }, [data])
 
-
     return (
-        <div className='card col-span-1'>
-            <div className='flex items-center justify-between flex-col'>
+        <div className='card'>
+            <div className='flex flex-col gap-4'>
                 <h5 className='text-lg'>Last 30 Days Expenses</h5>
 
-                <CustomBarChart
-                    data={chartData}
-                />
+                <div className='w-full h-[300px]'>
+                    <CustomBarChart data={chartData} color1="#B91C1C" color2="#EF4444" />
+                </div>
             </div>
         </div>
     )
