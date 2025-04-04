@@ -50,3 +50,5 @@ app.listen(PORT, () => {
 app.get('/', (req, res) => {
     res.send('This is budgee backend - with realtime data update')
 })
+
+//add a loading state
