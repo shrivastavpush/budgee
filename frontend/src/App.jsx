@@ -7,6 +7,7 @@ import Income from './pages/Dashboard/Income'
 import Expense from './pages/Dashboard/Expense'
 import UserProvider from './context/UserContext'
 import { Toaster } from 'react-hot-toast'
+import GithubStarButton from './components/GithubStarButton'
 
 const Root = () => {
     const isAuthenticated = true
@@ -20,7 +21,6 @@ const Root = () => {
 const App = () => {
     return (
         <UserProvider>
-            {/* <div> */}
             <Router>
                 <Routes>
                     <Route path='/' element={<Root />} />
@@ -30,8 +30,8 @@ const App = () => {
                     <Route path='/income' exact element={<Income />} />
                     <Route path='/expense' exact element={<Expense />} />
                 </Routes>
+                <GithubStarButton />
             </Router>
-            {/* </div> */}
 
             <Toaster
                 toastOptions={{
