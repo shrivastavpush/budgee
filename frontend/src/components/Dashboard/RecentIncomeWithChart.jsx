@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import CustomLineChart from '../Charts/CustomLineChart'
+
 const RecentIncomeWithChart = ({ data }) => {
 
     const [chartData, setChartData] = useState([])
-
-    const COLORS = ["#000000", "#22C55E", "#EF4444"]
 
     const prepareChartData = () => {
         const dataArr = data?.map((item) => ({
@@ -29,7 +28,7 @@ const RecentIncomeWithChart = ({ data }) => {
 
             {data?.length > 0 ? (
                 <div className='w-full h-[300px] mt-6'>
-                    <CustomLineChart data={chartData} stopColor="#22C55E" fillColor="#15803D" />
+                    <CustomLineChart data={chartData} stopColor="#00c951" fillColor="#00c951" />
                 </div>
             ) : (
                 <div className="text-center py-8">

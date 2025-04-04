@@ -28,7 +28,7 @@ const IncomeOverview = ({ transactions, onAddIncome }) => {
             </div>
 
             <div className='mt-10'>
-                <CustomBarChart data={chartData} color1="#15803D" color2="#22C55E" />
+                <CustomBarChart data={chartData} color1="#00c951" color2="#4ADE80" />
             </div>
         </div>
     )

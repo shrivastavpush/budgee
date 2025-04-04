@@ -1,5 +1,5 @@
 import React from 'react'
-import { XAxis, YAxis, Line, LineChart, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts'
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from 'recharts'
 
 const CustomLineChart = ({ data, stopColor, fillColor }) => {
 
@@ -7,7 +7,7 @@ const CustomLineChart = ({ data, stopColor, fillColor }) => {
         if (active && payload && payload.length) {
             return (
                 <div className='bg-white shadow-md p-2 rounded-lg border border-gray-300'>
-                    <p className='text-sm font-semibold text-purple-800 mb-1'>{payload[0].payload.category}</p>
+                    <p className='text-sm font-semibold text-teal-600 mb-1'>{payload[0].payload.name || payload[0].payload.category}</p>
                     <p className='text-sm text-gray-600'>
                         Amount: <span className='font-medium text-xs text-gray-900'>₹{payload[0].payload.amount}</span>
                     </p>

@@ -19,7 +19,7 @@ const Last30DayExpenses = ({ data }) => {
 
                 {data?.length > 0 ? (
                     <div className='w-full h-[300px]'>
-                        <CustomBarChart data={chartData} color1="#B91C1C" color2="#EF4444" />
+                        <CustomBarChart data={chartData} color1="#fb2c2c" color2="#F87171" />
                     </div>
                 ) : (
                     <div className="text-center py-8">
