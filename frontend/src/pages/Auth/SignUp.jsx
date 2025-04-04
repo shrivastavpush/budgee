@@ -95,7 +95,7 @@ const SignUp = () => {
                         image={profilePic}
                         setImage={setProfilePic} />
 
-                    <div className="grid grid-cols-3 md:grid-cols-2 gap-x-4">
+                    <div className="grid grid-cols-2 gap-x-4">
                         <Input
                             value={fullName}
                             onChange={({ target }) => {
