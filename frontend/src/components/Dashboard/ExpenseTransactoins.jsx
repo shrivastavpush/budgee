@@ -15,17 +15,24 @@ const ExpenseTransactoins = ({ transactions, onSeeMore }) => {
                 </button>
             </div>
             <div className="mt-6">
-                {transactions?.slice(0, 5)?.map((expense) => (
-                    <TransactionInfoCard
-                        key={expense._id}
-                        title={expense.category}
-                        icon={expense.icon}
-                        date={moment(expense.date).format("Do MM YYYY")}
-                        amount={expense.amount}
-                        type="expense"
-                        hideDeleteBtn
-                    />
-                ))}
+                {transactions?.length > 0 ? (
+                    transactions?.slice(0, 5)?.map((expense) => (
+                        <TransactionInfoCard
+                            key={expense._id}
+                            title={expense.category}
+                            icon={expense.icon}
+                            date={moment(expense.date).format("Do MM YYYY")}
+                            amount={expense.amount}
+                            type="expense"
+                            hideDeleteBtn
+                        />
+                    ))
+                ) : (
+                    <div className="text-center py-8">
+                        <p className="text-gray-500">No expenses recorded yet</p>
+                        <p className="text-sm text-gray-400 mt-2">Add your first expense to start tracking</p>
+                    </div>
+                )}
             </div>
         </div>
     )

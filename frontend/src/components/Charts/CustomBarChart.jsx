@@ -25,6 +25,17 @@ const CustomBarChart = ({ data = [], color1, color2 }) => {
         return null
     }
 
+    if (!data || data.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[300px]">
+                <div className="text-center">
+                    <p className="text-gray-500">No data available</p>
+                    <p className="text-sm text-gray-400 mt-2">Add some data to see the chart</p>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className='bg-white mt-6'>
             <ResponsiveContainer width="100%" height={300}>
