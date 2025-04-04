@@ -5,14 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'frontend/**'
-      - 'backend/**'
+      - "frontend/**"
+      - "backend/**"
   pull_request:
     branches:
       - main
     paths:
-      - 'frontend/**'
-      - 'backend/**'
+      - "frontend/**"
+      - "backend/**"
 
 jobs:
   deploy-frontend:
@@ -22,16 +22,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Trigger Vercel Deployment
+      - name: Trigger Vercel Deployment via Deploy Hook
         run: |
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"gitSource": {"type": "github", "repoId": "${{ secrets.VERCEL_REPO_ID }}", "ref": "main"}}' \
-            https://api.vercel.com/v13/deployments
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
 
   deploy-backend:
     runs-on: ubuntu-latest
