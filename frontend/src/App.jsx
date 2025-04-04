@@ -17,8 +17,6 @@ const Root = () => {
         <Navigate to='/dashboard' />
 }
 
-//add a loading state
-
 const App = () => {
     return (
         <UserProvider>
