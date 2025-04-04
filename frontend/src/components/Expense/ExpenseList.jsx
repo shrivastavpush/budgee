@@ -3,7 +3,7 @@ import React from 'react'
 import { LuDownload } from 'react-icons/lu'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 
-const ExpenseList = ({ transactions, onDelete, onDownload }) => {
+const ExpenseList = ({ transactions, onDelete, onEdit, onDownload }) => {
 
     return (
         <div className='card'>
@@ -28,6 +28,7 @@ const ExpenseList = ({ transactions, onDelete, onDownload }) => {
                             console.log("Deleting Expense ID:", expense._id);
                             onDelete(expense._id)
                         }}
+                        onEdit={() => onEdit(expense)}
                     />
                 ))}
             </div>

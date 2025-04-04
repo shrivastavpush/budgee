@@ -33,13 +33,13 @@ axiosInstance.interceptors.response.use(
         //Handle common errors globally
         if (error.response) {
             if (error.response.status === 401) {
-                //Rediect ot login page
+                //Redirect to login page
                 window.location.href = '/login'
             } else if (error.response.status === 500) {
                 console.error("Server error, Please try again later.");
             }
         } else if (error.code === "ECONNABORATED") {
-            console.error("Request timout, Please try again. ");
+            console.error("Request timeout, Please try again. ");
         }
         return Promise.reject(error)
     }

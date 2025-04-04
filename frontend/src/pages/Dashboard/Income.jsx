@@ -19,6 +19,10 @@ const Income = () => {
     const [incomeData, setIncomeData] = useState([])
     const [loading, setLoading] = useState(false)
     const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
+    const [openEditIncomeModal, setOpenEditIncomeModal] = useState({
+        show: false,
+        data: null
+    })
     const [openDeleteAlert, setOpenDeleteAlert] = useState({
         show: false,
         data: null
@@ -77,6 +81,41 @@ const Income = () => {
             }
         } catch (error) {
             console.log("Error while adding income", error.response?.data?.message || error.message);
+        }
+    }
+
+    // Handle Edit Income
+    const handleEditIncome = async (income) => {
+        const { source, amount, date, icon } = income
+
+        if (!source.trim()) {
+            toast.error("Source is required")
+            return
+        }
+
+        if (!amount || isNaN(amount) || Number(amount) <= 0) {
+            toast.error("Amount should be a valid number greater than 0")
+            return
+        }
+
+        if (!date) {
+            toast.error("Date is required")
+            return
+        }
+
+        try {
+            const response = await axiosInstance.patch(
+                `${API_PATHS.INCOME.UPDATE_INCOME(openEditIncomeModal.data._id)}`,
+                { source, amount, date, icon }
+            )
+
+            if (response.data) {
+                setOpenEditIncomeModal({ show: false, data: null })
+                toast.success("Income updated successfully")
+                fetchIncomeDetails()
+            }
+        } catch (error) {
+            console.log("Error while updating income", error.response?.data?.message || error.message);
         }
     }
 
@@ -139,6 +178,12 @@ const Income = () => {
                             data: id
                         })
                     }}
+                    onEdit={(income) => {
+                        setOpenEditIncomeModal({
+                            show: true,
+                            data: income
+                        })
+                    }}
                     onDownload={handleDownloadIncomeDetails}
                 />
 
@@ -148,6 +193,16 @@ const Income = () => {
                     title="Add Income">
                     <AddIncomeForm
                         onAddIncome={handleAddIncome}
+                    />
+                </Modal>
+
+                <Modal
+                    isOpen={openEditIncomeModal.show}
+                    onClose={() => setOpenEditIncomeModal({ show: false, data: null })}
+                    title="Edit Income">
+                    <AddIncomeForm
+                        initialData={openEditIncomeModal.data}
+                        onAddIncome={handleEditIncome}
                     />
                 </Modal>
 

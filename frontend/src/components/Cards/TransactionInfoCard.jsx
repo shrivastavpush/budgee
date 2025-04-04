@@ -1,15 +1,16 @@
 import React from 'react'
 import { LuUtensils, LuTrendingUp, LuTrendingDown, LuTrash2 } from 'react-icons/lu'
+import { TbEdit } from "react-icons/tb";
 import { addThousandSeparator } from '../../utils/helper'
 
-const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, onDelete }) => {
+const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, onDelete, onEdit }) => {
 
     const getAmountStyles = () => type === 'income'
         ? 'bg-green-50 text-green-500'
         : 'bg-red-50 text-red-500'
 
     return (
-        <div className='group relative flex items-center gap-4 mt-2 p-3 rounded-lg hover:bg-teal-100/50'>
+        <div className='group relative flex items-center gap-4 mt-2 p-3 rounded-lg hover:bg-teal-100/30'>
             <div className='w-12 h-12 flex items-center justify-center text-xl text-teal-800 bg-teal-50 rounded-full'>
                 {icon ? (
                     <img src={icon} alt={title} className='w-6 h-6' />
@@ -25,13 +26,20 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, o
                 </div>
             </div>
 
-            <div className='flex items-center gap-2'>
+            <div className='flex items-center gap-3'>
                 {!hideDeleteBtn && (
-                    <button
-                        className='text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'
-                        onClick={onDelete}>
-                        <LuTrash2 size={18} />
-                    </button>
+                    <>
+                        <button
+                            className='text-gray-400 hover:text-teal-500 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer'
+                            onClick={onEdit}>
+                            <TbEdit size={18} />
+                        </button>
+                        <button
+                            className='text-gray-400 hover:text-red-500 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer'
+                            onClick={onDelete}>
+                            <LuTrash2 size={18} />
+                        </button>
+                    </>
                 )}
             </div>
 

@@ -17,6 +17,10 @@ const Expense = () => {
     const [expenseData, setExpenseData] = useState([])
     const [loading, setLoading] = useState(false)
     const [openAddExpenseModal, setOpenAddExpenseModal] = useState(false)
+    const [openEditExpenseModal, setOpenEditExpenseModal] = useState({
+        show: false,
+        data: null
+    })
     const [openDeleteAlert, setOpenDeleteAlert] = useState({
         show: false,
         data: null
@@ -77,17 +81,52 @@ const Expense = () => {
         }
     }
 
+    // Handle Edit Expense
+    const handleEditExpense = async (expense) => {
+        const { category, amount, date, icon } = expense
+
+        if (!category.trim()) {
+            toast.error("Category is required")
+            return
+        }
+
+        if (!amount || isNaN(amount) || Number(amount) <= 0) {
+            toast.error("Amount should be a valid number greater than 0")
+            return
+        }
+
+        if (!date) {
+            toast.error("Date is required")
+            return
+        }
+
+        try {
+            const response = await axiosInstance.patch(
+                `${API_PATHS.EXPENSE.UPDATE_EXPENSE(openEditExpenseModal.data._id)}`,
+                { category, amount, date, icon }
+            )
+
+            if (response.data) {
+                setOpenEditExpenseModal({ show: false, data: null })
+                toast.success("Expense updated successfully")
+                fetchExpenseDetails()
+            }
+        } catch (error) {
+            console.log("Error while updating expense", error.response?.data?.message || error.message);
+        }
+    }
+
     // Delete Expense
     const deleteExpense = async (id) => {
         try {
-            await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_EXPENSE(id));
+            await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_EXPENSE(id))
 
-            setOpenDeleteAlert({ show: false, data: null });
-            toast.success("Expense deleted successfully");
-            fetchExpenseDetails();
+            setOpenDeleteAlert({ show: false, data: null })
+            toast.success("Expense deleted successfully")
+            fetchExpenseDetails()
         } catch (error) {
-            console.log("Error while deleting expense", error.response?.data?.message || error.message);
-            toast.error("Failed to delete expense. Try again.");
+            console.log("Error while deleting expense", error.response?.data?.message || error.message)
+            toast.error("Failed to delete expense. Try again.")
         }
     }
 
@@ -130,6 +169,12 @@ const Expense = () => {
                 <ExpenseList
                     transactions={expenseData}
                     onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
+                    onEdit={(expense) => {
+                        setOpenEditExpenseModal({
+                            show: true,
+                            data: expense
+                        })
+                    }}
                     onDownload={handleDownloadExpenseDetails}
                 />
 
@@ -139,6 +184,16 @@ const Expense = () => {
                     title="Add Expense">
                     <AddExpenseForm
                         onAddExpense={handleAddExpense}
+                    />
+                </Modal>
+
+                <Modal
+                    isOpen={openEditExpenseModal.show}
+                    onClose={() => setOpenEditExpenseModal({ show: false, data: null })}
+                    title="Edit Expense">
+                    <AddExpenseForm
+                        initialData={openEditExpenseModal.data}
+                        onAddExpense={handleEditExpense}
                     />
                 </Modal>
 

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import EmojiPickerPopup from '../EmojiPickerPopup'
 import Input from '../Inputs/Input'
 
-const AddExpenseForm = ({ onAddExpense }) => {
+const AddExpenseForm = ({ onAddExpense, initialData }) => {
 
     const [expense, setExpense] = useState({
         amount: '',
@@ -10,6 +10,17 @@ const AddExpenseForm = ({ onAddExpense }) => {
         category: '',
         date: '',
     })
+
+    useEffect(() => {
+        if (initialData) {
+            setExpense({
+                category: initialData.category || '',
+                amount: initialData.amount || '',
+                date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : '',
+                icon: initialData.icon || '',
+            })
+        }
+    }, [initialData])
 
     const handleChange = (key, value) => {
         setExpense((prev) => ({
@@ -52,7 +63,9 @@ const AddExpenseForm = ({ onAddExpense }) => {
                 <button
                     type='button'
                     className='add-btn add-btn-fill'
-                    onClick={() => onAddExpense(expense)}>Add Expense</button>
+                    onClick={() => onAddExpense(expense)}>
+                    {initialData ? 'Update Expense' : 'Add Expense'}
+                </button>
             </div>
         </>
     )

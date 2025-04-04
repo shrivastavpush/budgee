@@ -94,3 +94,31 @@ exports.downloadIncomeExcel = async (req, res) => {
         res.status(500).json({ message: "Server Error" })
     }
 }
+
+// update income
+exports.updateIncome = async (req, res) => {
+    const userId = req.user.id
+    if (!userId) {
+        return res.status(401).json({ message: "Unauthorized, user not found" });
+    }
+
+    try {
+        const { icon, source, amount, date } = req.body
+        const incomeId = req.params.id
+
+        // Find and update the income
+        const updatedIncome = await Income.findOneAndUpdate(
+            { _id: incomeId, userId },
+            { icon, source, amount, date: new Date(date) },
+            { new: true }
+        )
+
+        if (!updatedIncome) {
+            return res.status(404).json({ message: "Income not found" });
+        }
+
+        res.status(200).json(updatedIncome)
+    } catch (error) {
+        res.status(500).json({ message: "Server Error" })
+    }
+}
