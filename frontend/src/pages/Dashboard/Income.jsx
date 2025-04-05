@@ -12,6 +12,7 @@ import IncomeList from '../../components/Income/IncomeList'
 import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
 import { toast } from 'react-hot-toast'
+import SkeletonCard from '../../components/Cards/SkeletonCard'
 
 const Income = () => {
     useUserAuth()
@@ -160,32 +161,42 @@ const Income = () => {
 
     return (
         <DashboardLayout activeMenu="Income">
-            <div className='my-5 mx-auto'>
+            <div className='my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                 <div className='grid grid-cols-1 gap-6'>
                     <div className=''>
-                        <IncomeOverview
-                            transactions={incomeData}
-                            onAddIncome={() => setOpenAddIncomeModal(true)}
-                        />
+                        {loading ? (
+                            <SkeletonCard type="chart" />
+                        ) : (
+                            <IncomeOverview
+                                transactions={incomeData}
+                                onAddIncome={() => setOpenAddIncomeModal(true)}
+                            />
+                        )}
                     </div>
                 </div>
 
-                <IncomeList
-                    transactions={incomeData}
-                    onDelete={(id) => {
-                        setOpenDeleteAlert({
-                            show: true,
-                            data: id
-                        })
-                    }}
-                    onEdit={(income) => {
-                        setOpenEditIncomeModal({
-                            show: true,
-                            data: income
-                        })
-                    }}
-                    onDownload={handleDownloadIncomeDetails}
-                />
+                <div className='mt-6'>
+                    {loading ? (
+                        <SkeletonCard type="transaction" count={4} />
+                    ) : (
+                        <IncomeList
+                            transactions={incomeData}
+                            onDelete={(id) => {
+                                setOpenDeleteAlert({
+                                    show: true,
+                                    data: id
+                                })
+                            }}
+                            onEdit={(income) => {
+                                setOpenEditIncomeModal({
+                                    show: true,
+                                    data: income
+                                })
+                            }}
+                            onDownload={handleDownloadIncomeDetails}
+                        />
+                    )}
+                </div>
 
                 <Modal
                     isOpen={openAddIncomeModal}

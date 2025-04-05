@@ -10,6 +10,7 @@ import AddExpenseForm from '../../components/Expense/AddExpenseForm'
 import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
 import ExpenseList from '../../components/Expense/ExpenseList'
+import SkeletonCard from '../../components/Cards/SkeletonCard'
 
 const Expense = () => {
     useUserAuth()
@@ -156,27 +157,37 @@ const Expense = () => {
 
     return (
         <DashboardLayout activeMenu="Expense">
-            <div className='my-5 mx-auto'>
+            <div className='my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
                 <div className='grid grid-cols-1 gap-6'>
                     <div className=''>
-                        <ExpenseOverview
-                            transactions={expenseData}
-                            onAddExpense={() => setOpenAddExpenseModal(true)}
-                        />
+                        {loading ? (
+                            <SkeletonCard type="chart" />
+                        ) : (
+                            <ExpenseOverview
+                                transactions={expenseData}
+                                onAddExpense={() => setOpenAddExpenseModal(true)}
+                            />
+                        )}
                     </div>
                 </div>
 
-                <ExpenseList
-                    transactions={expenseData}
-                    onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
-                    onEdit={(expense) => {
-                        setOpenEditExpenseModal({
-                            show: true,
-                            data: expense
-                        })
-                    }}
-                    onDownload={handleDownloadExpenseDetails}
-                />
+                <div className='mt-6'>
+                    {loading ? (
+                        <SkeletonCard type="transaction" count={4} />
+                    ) : (
+                        <ExpenseList
+                            transactions={expenseData}
+                            onDelete={(id) => setOpenDeleteAlert({ show: true, data: id })}
+                            onEdit={(expense) => {
+                                setOpenEditExpenseModal({
+                                    show: true,
+                                    data: expense
+                                })
+                            }}
+                            onDownload={handleDownloadExpenseDetails}
+                        />
+                    )}
+                </div>
 
                 <Modal
                     isOpen={openAddExpenseModal}

@@ -1,10 +1,9 @@
-import moment from 'moment'
 import React from 'react'
+import moment from 'moment'
 import { LuDownload } from 'react-icons/lu'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 
 const ExpenseList = ({ transactions, onDelete, onEdit, onDownload }) => {
-
     return (
         <div className='card'>
             <div className='flex items-center justify-between'>
@@ -24,10 +23,7 @@ const ExpenseList = ({ transactions, onDelete, onEdit, onDownload }) => {
                         amount={expense.amount}
                         date={moment(expense.date).format("Do MM YYYY")}
                         icon={expense.icon}
-                        onDelete={() => {
-                            console.log("Deleting Expense ID:", expense._id);
-                            onDelete(expense._id)
-                        }}
+                        onDelete={() => onDelete(expense._id)}
                         onEdit={() => onEdit(expense)}
                     />
                 ))}
