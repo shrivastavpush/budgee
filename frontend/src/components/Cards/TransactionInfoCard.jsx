@@ -10,7 +10,7 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, o
         : 'bg-red-50 text-red-500'
 
     return (
-        <div className='group relative flex items-center gap-4 mt-2 p-3 rounded-lg hover:bg-teal-100/30'>
+        <div className='group relative flex items-center gap-4 mt-2 p-2 md:p-3 rounded-lg hover:bg-teal-100/30'>
             <div className='w-12 h-12 flex items-center justify-center text-xl text-teal-800 bg-teal-50 rounded-full'>
                 {icon ? (
                     <img src={icon} alt={title} className='w-6 h-6' />
@@ -43,7 +43,7 @@ const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, o
                 )}
             </div>
 
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md ${getAmountStyles()}`}>
+            <div className={`flex items-center gap-2 p-1.5 md:px-3 md:py-1.5 rounded-md ${getAmountStyles()}`}>
                 <h6 className='text-xs font-medium'>
                     {type === "income" ? "+" : "-"} ₹{addThousandSeparator(amount)}
                 </h6>
