@@ -1,7 +1,5 @@
 const xlsx = require('xlsx')
 const Income = require('../models/Income')
-const mongoose = require('mongoose')
-const { sanitize } = require('express-mongo-sanitize')
 
 // add income
 exports.addIncome = async (req, res) => {
@@ -11,54 +9,26 @@ exports.addIncome = async (req, res) => {
     }
 
     try {
-        // Sanitize request body to prevent NoSQL injection
-        sanitize(req.body)
         const { icon, source, amount, date } = req.body
 
-        // Validate required fields
+        //checking for missing fields
         if (!source || !amount || !date) {
             return res.status(400).json({ message: "All fields are required" });
         }
 
-        // Sanitize and validate source
-        const sanitizedSource = source.trim()
-        if (sanitizedSource.length > 50) {
-            return res.status(400).json({ message: "Source name too long" });
-        }
-
-        // Sanitize and validate amount
-        const sanitizedAmount = parseFloat(amount);
-        if (isNaN(sanitizedAmount) || sanitizedAmount <= 0 || sanitizedAmount > 1000000) {
-            return res.status(400).json({ message: "Invalid amount" });
-        }
-
-        // Sanitize date
-        const sanitizedDate = new Date(date);
-        if (isNaN(sanitizedDate.getTime())) {
-            return res.status(400).json({ message: "Invalid date format" });
-        }
-
-        // Validate date is not in the future
-        const currentDate = new Date();
-        if (sanitizedDate > currentDate) {
-            return res.status(400).json({ message: "Date cannot be in the future" });
-        }
-
         const newIncome = new Income({
             userId,
-            icon: icon ? icon.trim() : undefined,
-            source: sanitizedSource,
-            amount: sanitizedAmount,
-            date: sanitizedDate
+            icon,
+            source,
+            amount,
+            date: new Date(date)
         })
 
         await newIncome.save()
         res.status(200).json(newIncome)
 
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: error.message });
-        }
+        // console.error("Error adding income:", error);
         res.status(500).json({ message: "Server Error" })
     }
 }
@@ -71,52 +41,32 @@ exports.getAllIncome = async (req, res) => {
     }
 
     try {
-        // Validate userId is a valid MongoDB ObjectId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid user ID format" });
-        }
-
-        const income = await Income.find({
-            userId: new mongoose.Types.ObjectId(userId)
-        }).sort({ date: -1 })
-
+        const income = await Income.find({ userId }).sort({ date: -1 })
         res.json(income)
+
     } catch (error) {
+        // console.error("Error adding income:", error);
         res.status(500).json({ message: "Server Error" })
     }
 }
 
 // delete income
 exports.deleteIncome = async (req, res) => {
-    const userId = req.user.id
-    if (!userId) {
-        return res.status(401).json({ message: "Unauthorized, user not found" });
-    }
+    // const userId = req.user.id
+    // if (!userId) {
+    //     return res.status(401).json({ message: "Unauthorized, user not found" });
+    // }
 
     try {
-        const incomeId = req.params.id
-
-        // Validate incomeId is a valid MongoDB ObjectId
-        if (!mongoose.Types.ObjectId.isValid(incomeId)) {
-            return res.status(400).json({ message: "Invalid income ID format" });
-        }
-
-        const deletedIncome = await Income.findOneAndDelete({
-            _id: new mongoose.Types.ObjectId(incomeId),
-            userId: new mongoose.Types.ObjectId(userId)
-        });
-
-        if (!deletedIncome) {
-            return res.status(404).json({ message: "Income not found" });
-        }
-
+        await Income.findByIdAndDelete(req.params.id)
         res.json({ message: "Income deleted successfully" });
     } catch (error) {
+        // console.error("Error adding income:", error);
         res.status(500).json({ message: "Server Error" })
     }
 }
 
-// download excel
+// downlaod excel
 exports.downloadIncomeExcel = async (req, res) => {
     const userId = req.user.id
     if (!userId) {
@@ -124,14 +74,7 @@ exports.downloadIncomeExcel = async (req, res) => {
     }
 
     try {
-        // Validate userId is a valid MongoDB ObjectId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ message: "Invalid user ID format" });
-        }
-
-        const income = await Income.find({
-            userId: new mongoose.Types.ObjectId(userId)
-        }).sort({ date: -1 })
+        const income = await Income.find({ userId }).sort({ date: -1 })
 
         //Preparing data for Excel
         const data = income.map((item) => ({
@@ -147,6 +90,7 @@ exports.downloadIncomeExcel = async (req, res) => {
         xlsx.writeFile(wb, 'income_details.xlsx')
         res.download('income_details.xlsx')
     } catch (error) {
+        // console.error("Error adding income:", error);
         res.status(500).json({ message: "Server Error" })
     }
 }
@@ -159,59 +103,13 @@ exports.updateIncome = async (req, res) => {
     }
 
     try {
-        // Sanitize request body to prevent NoSQL injection
-        sanitize(req.body)
         const { icon, source, amount, date } = req.body
         const incomeId = req.params.id
 
-        // Validate incomeId is a valid MongoDB ObjectId
-        if (!mongoose.Types.ObjectId.isValid(incomeId)) {
-            return res.status(400).json({ message: "Invalid income ID format" });
-        }
-
-        // Validate required fields
-        if (!source || !amount || !date) {
-            return res.status(400).json({ message: "Missing required fields" });
-        }
-
-        // Sanitize and validate source
-        const sanitizedSource = source.trim()
-        if (sanitizedSource.length > 50) {
-            return res.status(400).json({ message: "Source name too long" });
-        }
-
-        // Sanitize and validate amount
-        const sanitizedAmount = parseFloat(amount);
-        if (isNaN(sanitizedAmount) || sanitizedAmount <= 0 || sanitizedAmount > 1000000) {
-            return res.status(400).json({ message: "Invalid amount" });
-        }
-
-        // Sanitize date
-        const sanitizedDate = new Date(date);
-        if (isNaN(sanitizedDate.getTime())) {
-            return res.status(400).json({ message: "Invalid date format" });
-        }
-
-        // Validate date is not in the future
-        const currentDate = new Date();
-        if (sanitizedDate > currentDate) {
-            return res.status(400).json({ message: "Date cannot be in the future" });
-        }
-
-        // Find and update the income using $set operator
+        // Find and update the income
         const updatedIncome = await Income.findOneAndUpdate(
-            {
-                _id: new mongoose.Types.ObjectId(incomeId),
-                userId: new mongoose.Types.ObjectId(userId)
-            },
-            {
-                $set: {
-                    icon: icon ? icon.trim() : undefined,
-                    source: sanitizedSource,
-                    amount: sanitizedAmount,
-                    date: sanitizedDate
-                }
-            },
+            { _id: incomeId, userId },
+            { icon, source, amount, date: new Date(date) },
             { new: true }
         )
 
@@ -221,9 +119,6 @@ exports.updateIncome = async (req, res) => {
 
         res.status(200).json(updatedIncome)
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: error.message });
-        }
         res.status(500).json({ message: "Server Error" })
     }
 }

@@ -2,8 +2,6 @@ require("dotenv").config()
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
-const helmet = require('helmet')
-const mongoSanitize = require('express-mongo-sanitize')
 const connectDB = require('./config/db')
 const authRoutes = require('./routes/authRoutes')
 const incomeRoutes = require('./routes/incomeRoutes')
@@ -13,10 +11,6 @@ const dashboardRoutes = require('./routes/dashboardRoutes')
 const PORT = process.env.PORT || 5000
 
 const app = express()
-
-// Essential Security Middleware
-app.use(helmet()) // Set security HTTP headers
-app.use(mongoSanitize()) // Sanitize data against NoSQL injection
 
 const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
 
@@ -37,7 +31,7 @@ app.use(
 
 app.options("*", cors());
 
-app.use(express.json({ limit: '10kb' })) // Body parser with size limit
+app.use(express.json())
 
 connectDB()
 
