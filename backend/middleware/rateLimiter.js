@@ -7,6 +7,17 @@ const authLimiter = rateLimit({
     message: 'Too many login attempts, please try again after 15 minutes',
     standardHeaders: true,
     legacyHeaders: false,
+    skipSuccessfulRequests: false, // Count successful attempts too
+});
+
+// Rate limiter for database operations
+const dbLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 30, // Limit each IP to 30 DB operations per minute
+    message: 'Too many database operations, please try again after a minute',
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipFailedRequests: false, // Count failed attempts too
 });
 
 // Rate limiter for regular API routes
@@ -29,6 +40,7 @@ const uploadLimiter = rateLimit({
 
 module.exports = {
     authLimiter,
+    dbLimiter,
     apiLimiter,
     uploadLimiter
 }; 

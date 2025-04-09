@@ -1,7 +1,7 @@
 const express = require('express')
 const { protect } = require('../middleware/authMiddleware')
 const upload = require('../middleware/uploadMiddleware')
-const { authLimiter, uploadLimiter } = require('../middleware/rateLimiter')
+const { authLimiter, apiLimiter, dbLimiter, uploadLimiter } = require('../middleware/rateLimiter')
 const {
     registerUser,
     loginUser,
@@ -10,10 +10,14 @@ const {
 
 const router = express.Router()
 
-router.post("/register", authLimiter, registerUser)
-router.post("/login", authLimiter, loginUser)
-router.get("/getUser", protect, getUserInfo)
+// Auth routes with strict rate limiting and DB operation limiting
+router.post("/register", authLimiter, dbLimiter, registerUser)
+router.post("/login", authLimiter, dbLimiter, loginUser)
 
+// Protected routes with API rate limiting and DB operation limiting
+router.get("/getUser", apiLimiter, dbLimiter, protect, getUserInfo)
+
+// Upload route with upload-specific rate limiting
 router.post("/upload-image", uploadLimiter, upload.single('image'), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" })
