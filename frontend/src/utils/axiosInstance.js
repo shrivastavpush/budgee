@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { BASE_URL } from './apiPaths'
+import toast from 'react-hot-toast'
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -35,11 +36,15 @@ axiosInstance.interceptors.response.use(
             if (error.response.status === 401) {
                 //Redirect to login page
                 window.location.href = '/login'
+            } else if (error.response.status === 429) {
+                // Rate limit error
+                const message = error.response.data?.message || 'Too many requests. Please try again later.'
+                toast.error(message)
             } else if (error.response.status === 500) {
-                console.error("Server error, Please try again later.");
+                toast.error("Server error, Please try again later.")
             }
         } else if (error.code === "ECONNABORATED") {
-            console.error("Request timeout, Please try again. ");
+            toast.error("Request timeout, Please try again.")
         }
         return Promise.reject(error)
     }
