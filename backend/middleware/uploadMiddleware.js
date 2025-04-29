@@ -1,4 +1,5 @@
 const multer = require('multer')
+const sanitize = require('sanitize-filename');
 
 //Configuring the storage
 const storage = multer.diskStorage({
@@ -6,7 +7,12 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/')
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()} - ${file.originalname}`)
+        // Get user name from req.user (populated by authMiddleware)
+        let userName = req.user && req.user.fullName ? req.user.fullName : 'anonymous';
+        userName = sanitize(userName).replace(/\s+/g, '_');
+        const timeOfUpload = Date.now();
+        const safeName = sanitize(file.originalname).replace(/\s+/g, '_');
+        cb(null, `${userName}_${timeOfUpload}_${safeName}`);
     },
 })
 
@@ -20,6 +26,11 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const upload = multer({ storage, fileFilter })
+// Limit file size to 2MB
+const upload = multer({
+    storage,
+    fileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+})
 
 module.exports = upload
