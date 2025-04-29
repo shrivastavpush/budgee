@@ -1,24 +1,54 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { LuUser, LuUpload, LuTrash, } from 'react-icons/lu'
+import { toast } from 'react-hot-toast'
 
 const ProfilePhotoSelector = ({ image, setImage }) => {
+    const [prevURL, setPrevURL] = useState(null);
 
-    const inputRef = useRef(null)
-    const [prevURL, setPrevURL] = useState(null)
+    // Clean up object URL on unmount
+    useEffect(() => {
+        return () => {
+            if (prevURL) {
+                URL.revokeObjectURL(prevURL);
+            }
+        };
+    }, [prevURL]);
+
+    const inputRef = useRef(null);
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0]
-        //updaing image
-        setImage(file)
+        const file = e.target.files[0];
+        if (!file) return;
 
-        //generating preview url
-        const preview = URL.createObjectURL(file)
-        setPrevURL(preview)
+        // Only allow image files
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error('Only JPEG, JPG and PNG images are allowed.')
+            return;
+        }
+
+        setImage(file);
+
+        // Clean up previous object URL if any
+        if (prevURL) {
+            URL.revokeObjectURL(prevURL);
+        }
+
+        // Generate preview url
+        const preview = URL.createObjectURL(file);
+        setPrevURL(preview);
     }
 
     const handleRemoveImage = () => {
-        setImage(null)
-        setPrevURL(null)
+        setImage(null);
+        if (prevURL) {
+            URL.revokeObjectURL(prevURL);
+        }
+        setPrevURL(null);
+        // Reset file input value so the same file can be selected again
+        if (inputRef.current) {
+            inputRef.current.value = '';
+        }
     }
 
     const onChooseFile = () => { inputRef.current.click() }
