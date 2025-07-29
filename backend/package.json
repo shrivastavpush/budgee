@@ -19,7 +19,7 @@
     "express-rate-limit": "^7.5.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.2",
-    "multer": "^2.0.1",
+    "multer": "^2.0.2",
     "sanitize-filename": "^1.6.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
