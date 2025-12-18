@@ -48,7 +48,7 @@ const SignUp = () => {
     try {
       //Uploading image if available
       if (profilePic) {
-        const imageUploadRes = await uploadImage(profilePic)
+        const imageUploadRes = await uploadImage(profilePic, fullName)
         profileImageUrl = imageUploadRes.imageUrl || ""
       }
 
