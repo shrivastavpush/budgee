@@ -1,10 +1,10 @@
 const express = require('express')
 const {
-    addExpense,
-    getAllExpense,
-    deleteExpense,
-    updateExpense,
-    downloadExpenseExcel
+  addExpense,
+  getAllExpense,
+  deleteExpense,
+  updateExpense,
+  downloadExpenseExcel
 } = require('../controllers/expenseController')
 const { protect } = require('../middleware/authMiddleware')
 const { apiLimiter } = require('../middleware/rateLimiter')

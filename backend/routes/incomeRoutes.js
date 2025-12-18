@@ -1,10 +1,10 @@
 const express = require('express')
 const {
-    addIncome,
-    getAllIncome,
-    deleteIncome,
-    updateIncome,
-    downloadIncomeExcel
+  addIncome,
+  getAllIncome,
+  deleteIncome,
+  updateIncome,
+  downloadIncomeExcel
 } = require('../controllers/incomeController')
 const { protect } = require('../middleware/authMiddleware')
 const { apiLimiter } = require('../middleware/rateLimiter')

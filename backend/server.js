@@ -15,21 +15,21 @@ const app = express()
 const allowedOrigins = [process.env.CLIENT_URL, "http://localhost:5173"];
 
 app.use(
-    cors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-            } else {
-                callback(new Error("Not allowed by CORS"));
-            }
-        },
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true,
-    })
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
 );
 
-app.options("*", cors());
+app.options(/(.*)/, cors());
 
 app.use(express.json())
 
@@ -44,9 +44,18 @@ app.use("/api/v1/dashboard", dashboardRoutes)
 app.use('/uploads', express.static(path.join(__dirname, "uploads")))
 
 app.listen(PORT, () => {
-    console.log(`App listening on port ${PORT}`)
+  console.log(`App listening on port ${PORT}`)
 })
 
 app.get('/', (req, res) => {
-    res.send('This is budgee backend - with realtime data update')
+  res.send('This is budgee backend - with realtime data update')
+})
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack)
+  res.status(500).json({
+    message: "Internal Server Error",
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  })
 })
