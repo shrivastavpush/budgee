@@ -38,6 +38,7 @@ exports.registerUser = async (req, res) => {
     })
 
   } catch (error) {
+    console.error("Register Error:", error); // Log the specific error
     res.status(500).json({ message: "Error registering user", error: error.message })
   }
 
@@ -64,6 +65,7 @@ exports.loginUser = async (req, res) => {
       token: generateToken(user._id)
     })
   } catch (error) {
+    console.error("Login Error:", error); // Log the specific error
     res.status(500).json({ message: "Error logging in", error: error.message })
   }
 
