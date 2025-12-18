@@ -63,7 +63,7 @@ exports.deleteExpense = async (req, res) => {
   }
 
   try {
-    const deletedExpense = await Expense.findOneAndDelete({ _id: req.params.id, userId })
+    const deletedExpense = await Expense.findOneAndDelete({ _id: new mongoose.Types.ObjectId(req.params.id), userId })
 
     if (!deletedExpense) {
       return res.status(404).json({ message: "Expense not found or unauthorized access" })
@@ -125,7 +125,7 @@ exports.updateExpense = async (req, res) => {
 
     // Find and update the expense
     const updatedExpense = await Expense.findOneAndUpdate(
-      { _id: expenseId, userId },
+      { _id: new mongoose.Types.ObjectId(expenseId), userId },
       { icon, category, amount, date: new Date(date) },
       { new: true }
     )

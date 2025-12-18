@@ -63,7 +63,7 @@ exports.deleteIncome = async (req, res) => {
   }
 
   try {
-    const deletedIncome = await Income.findOneAndDelete({ _id: req.params.id, userId })
+    const deletedIncome = await Income.findOneAndDelete({ _id: new mongoose.Types.ObjectId(req.params.id), userId })
 
     if (!deletedIncome) {
       return res.status(404).json({ message: "Income not found or unauthorized access" })
@@ -125,7 +125,7 @@ exports.updateIncome = async (req, res) => {
 
     // Find and update the income
     const updatedIncome = await Income.findOneAndUpdate(
-      { _id: incomeId, userId },
+      { _id: new mongoose.Types.ObjectId(incomeId), userId },
       { icon, source, amount, date: new Date(date) },
       { new: true }
     )

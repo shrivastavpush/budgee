@@ -13,7 +13,7 @@ if (missingVars.length > 0) {
   console.log("✅ All required Environment Variables are present.");
 }
 
-console.log(`JWT_SECRET length: ${process.env.JWT_SECRET ? process.env.JWT_SECRET.length : 0}`);
+console.log(`JWT_SECRET is present: ${!!process.env.JWT_SECRET}`);
 
 console.log("Testing MongoDB Connection...");
 if (!process.env.MONGO_URI) {

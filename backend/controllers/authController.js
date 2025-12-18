@@ -19,6 +19,11 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" })
   }
 
+  // Prevent NoSQL injection
+  if (typeof email !== 'string') {
+    return res.status(400).json({ message: "Invalid email format" });
+  }
+
   try {
     //checking is email already present
     const existingUser = await User.findOne({ email })
@@ -51,6 +56,10 @@ exports.loginUser = async (req, res) => {
 
   if (!email || !password) {
     return res.status(400).json({ message: "All fields are required" })
+  }
+
+  if (typeof email !== 'string') {
+    return res.status(400).json({ message: "Invalid email format" });
   }
 
   try {
