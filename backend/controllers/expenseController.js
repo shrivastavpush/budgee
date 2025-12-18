@@ -1,4 +1,5 @@
 const xlsx = require('xlsx')
+const mongoose = require('mongoose')
 const Expense = require('../models/Expense')
 
 // add Expense
@@ -57,6 +58,10 @@ exports.deleteExpense = async (req, res) => {
     return res.status(401).json({ message: "Unauthorized, user not found" });
   }
 
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({ message: "Expense not found" });
+  }
+
   try {
     const deletedExpense = await Expense.findOneAndDelete({ _id: req.params.id, userId })
 
@@ -108,6 +113,10 @@ exports.updateExpense = async (req, res) => {
   const userId = req.user.id
   if (!userId) {
     return res.status(401).json({ message: "Unauthorized, user not found" });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({ message: "Expense not found" });
   }
 
   try {

@@ -18,7 +18,7 @@ router.post("/login", authLimiter, dbLimiter, loginUser)
 router.get("/getUser", apiLimiter, dbLimiter, protect, getUserInfo)
 
 // Upload route with upload-specific rate limiting
-router.post("/upload-image", protect, uploadLimiter, upload.single('image'), (req, res) => {
+router.post("/upload-image", uploadLimiter, protect, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" })
   }

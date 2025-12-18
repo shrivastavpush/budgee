@@ -1,5 +1,6 @@
 require("dotenv").config()
 const express = require('express')
+const mongoSanitize = require('express-mongo-sanitize')
 const cors = require('cors')
 const path = require('path')
 const connectDB = require('./config/db')
@@ -38,6 +39,7 @@ app.use(
 app.options(/(.*)/, cors());
 
 app.use(express.json())
+app.use(mongoSanitize())
 
 connectDB()
 
