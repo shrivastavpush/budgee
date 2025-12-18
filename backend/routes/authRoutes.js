@@ -1,6 +1,7 @@
 const express = require('express')
 const { protect } = require('../middleware/authMiddleware')
 const upload = require('../middleware/uploadMiddleware')
+const imagekit = require('../config/imageKit')
 const { authLimiter, apiLimiter, dbLimiter, uploadLimiter } = require('../middleware/rateLimiter')
 const {
   registerUser,
@@ -18,16 +19,23 @@ router.post("/login", authLimiter, dbLimiter, loginUser)
 router.get("/getUser", apiLimiter, dbLimiter, protect, getUserInfo)
 
 // Upload route with upload-specific rate limiting
-router.post("/upload-image", uploadLimiter, upload.single('image'), (req, res) => {
+router.post("/upload-image", uploadLimiter, upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: "No file uploaded" })
   }
 
-  const backendUrl = process.env.BACKEND_URL || "https://budgee-backend.onrender.com"
+  try {
+    const result = await imagekit.upload({
+      file: req.file.buffer,
+      fileName: req.file.originalname,
+      folder: '/budgee/avatars'
+    });
 
-  const imageUrl = `${backendUrl}/uploads/${req.file.filename}`
-
-  res.status(200).json({ imageUrl })
+    res.status(200).json({ imageUrl: result.url });
+  } catch (error) {
+    console.error("ImageKit Upload Error:", error);
+    res.status(500).json({ message: "Image upload failed", error: error.message });
+  }
 })
 
 module.exports = router
