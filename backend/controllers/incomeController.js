@@ -121,12 +121,22 @@ exports.updateIncome = async (req, res) => {
 
   try {
     const { icon, source, amount, date } = req.body
-    const incomeId = req.params.id
+    // Verify param is string (safe-guard)
+    const incomeIdStr = String(req.params.id);
+    const userIdStr = String(req.user.id);
 
     // Find and update the income
     const updatedIncome = await Income.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(incomeId), userId },
-      { icon, source, amount, date: new Date(date) },
+      {
+        _id: new mongoose.Types.ObjectId(incomeIdStr),
+        userId: userIdStr
+      },
+      {
+        icon,
+        source,
+        amount,
+        date: new Date(date)
+      },
       { new: true }
     )
 

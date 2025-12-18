@@ -121,12 +121,22 @@ exports.updateExpense = async (req, res) => {
 
   try {
     const { icon, category, amount, date } = req.body
-    const expenseId = req.params.id
+    // Verify param is string (safe-guard)
+    const expenseIdStr = String(req.params.id);
+    const userIdStr = String(req.user.id);
 
     // Find and update the expense
     const updatedExpense = await Expense.findOneAndUpdate(
-      { _id: new mongoose.Types.ObjectId(expenseId), userId },
-      { icon, category, amount, date: new Date(date) },
+      {
+        _id: new mongoose.Types.ObjectId(expenseIdStr),
+        userId: userIdStr
+      },
+      {
+        icon,
+        category,
+        amount,
+        date: new Date(date)
+      },
       { new: true }
     )
 

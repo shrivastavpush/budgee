@@ -5,14 +5,21 @@ import { toast } from 'react-hot-toast'
 const ProfilePhotoSelector = ({ image, setImage }) => {
   const [prevURL, setPrevURL] = useState(null);
 
-  // Clean up object URL on unmount
+  /* Safe URL generation */
   useEffect(() => {
-    return () => {
-      if (prevURL) {
-        URL.revokeObjectURL(prevURL);
-      }
-    };
-  }, [prevURL]);
+    if (image && typeof image === 'object') {
+      const url = URL.createObjectURL(image);
+      setPrevURL(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    }
+    // If image is null or not an object (e.g. initial load), ensure prevURL is clear
+    if (!image) {
+      setPrevURL(null);
+    }
+  }, [image]);
 
   const inputRef = useRef(null);
 
@@ -28,23 +35,13 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
     }
 
     setImage(file);
-
-    // Clean up previous object URL if any
-    if (prevURL) {
-      URL.revokeObjectURL(prevURL);
-    }
-
-    // Generate preview url
-    const preview = URL.createObjectURL(file);
-    setPrevURL(preview);
+    // prevURL is handled by useEffect
   }
 
   const handleRemoveImage = () => {
     setImage(null);
-    if (prevURL) {
-      URL.revokeObjectURL(prevURL);
-    }
-    setPrevURL(null);
+    // prevURL is handled by useEffect
+
     // Reset file input value so the same file can be selected again
     if (inputRef.current) {
       inputRef.current.value = '';
