@@ -1,35 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React, { useMemo } from 'react'
 import { prepareExpsenseChartData } from '../../utils/helper'
 import CustomBarChart from '../Charts/CustomBarChart'
 
 const Last30DayExpenses = ({ data }) => {
-    const [chartData, setChartData] = useState([])
+  const chartData = useMemo(() => prepareExpsenseChartData(data), [data])
 
-    useEffect(() => {
-        const result = prepareExpsenseChartData(data)
-        setChartData(result)
+  return (
+    <div className='card'>
+      <div className='flex flex-col gap-4'>
+        <h5 className='text-lg'>Last 30 Days Expenses</h5>
 
-        return () => { }
-    }, [data])
-
-    return (
-        <div className='card'>
-            <div className='flex flex-col gap-4'>
-                <h5 className='text-lg'>Last 30 Days Expenses</h5>
-
-                {data?.length > 0 ? (
-                    <div className='w-full h-[300px]'>
-                        <CustomBarChart data={chartData} color1="#fb2c2c" color2="#F87171" />
-                    </div>
-                ) : (
-                    <div className="text-center py-8">
-                        <p className="text-gray-500">No expenses in the last 30 days</p>
-                        <p className="text-sm text-gray-400 mt-2">Add your first expense to see the chart</p>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+        {data?.length > 0 ? (
+          <div className='w-full h-[300px]'>
+            <CustomBarChart data={chartData} color1="#fb2c2c" color2="#F87171" />
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500">No expenses in the last 30 days</p>
+            <p className="text-sm text-gray-400 mt-2">Add your first expense to see the chart</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 export default Last30DayExpenses

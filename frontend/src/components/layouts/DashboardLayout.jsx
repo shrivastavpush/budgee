@@ -4,25 +4,25 @@ import Navbar from './Navbar'
 import SideMenu from './SideMenu'
 
 const DashboardLayout = ({ children, activeMenu }) => {
-    const { user } = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
-    return (
-        <>
-            <Navbar activeMenu={activeMenu} />
+  return (
+    <>
+      <Navbar activeMenu={activeMenu} />
 
-            {user && (
-                <div className="flex">
-                    <div className="max-[1080px]:hidden mt-0 md:mt-5 h-[calc(100vh-6rem-15px)]">
-                        <SideMenu activeMenu={activeMenu} />
-                    </div>
+      {user && (
+        <div className="flex">
+          <div className="max-[1080px]:hidden mt-0 md:mt-5 h-[calc(100vh-6rem-15px)]">
+            <SideMenu activeMenu={activeMenu} />
+          </div>
 
-                    <div className="grow mx-0.5 md:mx-5 h-[calc(100vh-90px)] overflow-y-auto">
-                        {children}
-                    </div>
-                </div>
-            )}
-        </>
-    )
+          <div className="grow mx-0.5 md:mx-5 h-[calc(100vh-90px)] overflow-y-auto">
+            {children}
+          </div>
+        </div>
+      )}
+    </>
+  )
 }
 
 export default DashboardLayout

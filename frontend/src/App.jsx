@@ -10,39 +10,39 @@ import { Toaster } from 'react-hot-toast'
 import GithubStarButton from './components/GithubStarButton'
 
 const Root = () => {
-    const isAuthenticated = true
+  const isAuthenticated = true
 
-    return !isAuthenticated ?
-        <Navigate to='/login' />
-        :
-        <Navigate to='/dashboard' />
+  return !isAuthenticated ?
+    <Navigate to='/login' />
+    :
+    <Navigate to='/dashboard' />
 }
 
 const App = () => {
-    return (
-        <UserProvider>
-            <Router>
-                <Routes>
-                    <Route path='/' element={<Root />} />
-                    <Route path='/login' exact element={<Login />} />
-                    <Route path='/signup' exact element={<SignUp />} />
-                    <Route path='/dashboard' exact element={<Home />} />
-                    <Route path='/income' exact element={<Income />} />
-                    <Route path='/expense' exact element={<Expense />} />
-                </Routes>
-                <GithubStarButton />
-            </Router>
+  return (
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path='/' element={<Root />} />
+          <Route path='/login' exact element={<Login />} />
+          <Route path='/signup' exact element={<SignUp />} />
+          <Route path='/dashboard' exact element={<Home />} />
+          <Route path='/income' exact element={<Income />} />
+          <Route path='/expense' exact element={<Expense />} />
+        </Routes>
+        <GithubStarButton />
+      </Router>
 
-            <Toaster
-                toastOptions={{
-                    className: '',
-                    style: {
-                        fontSize: '13px',
-                    }
-                }}
-            />
-        </UserProvider>
-    )
+      <Toaster
+        toastOptions={{
+          className: '',
+          style: {
+            fontSize: '13px',
+          }
+        }}
+      />
+    </UserProvider>
+  )
 }
 
 export default App

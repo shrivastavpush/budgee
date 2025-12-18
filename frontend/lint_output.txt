@@ -1,0 +1,172 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Charts\CustomLineChart.jsx
+  45:40  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  43 |                     <XAxis dataKey="month" tick={{ fontSize: 12, fill: '#555' }} stroke="none" />
+  44 |                     <YAxis tick={{ fontSize: 12, fill: '#555' }} stroke="none" />
+> 45 |                     <Tooltip content={<CustomTooltip />} />
+     |                                        ^^^^^^^^^^^^^ This component is created during render
+  46 |
+  47 |                     <Area type="monotone" dataKey="amount" stroke={stopColor} fill="url(#Grdient)" strokeWidth={3} dot={{ r: 3, fill: fillColor }} />
+  48 |                 </AreaChart>
+
+   4 | const CustomLineChart = ({ data, stopColor, fillColor }) => {
+   5 |
+>  6 |     const CustomTooltip = ({ active, payload }) => {
+     |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  7 |         if (active && payload && payload.length) {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  8 |             return (
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |         return null
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |     }
+     | ^^^^^^ The component is created during render here
+  19 |
+  20 |     if (!data || data.length === 0) {
+  21 |         return (  react-hooks/static-components
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Dashboard\Last30DayExpenses.jsx
+  10:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   8 |     useEffect(() => {
+   9 |         const result = prepareExpsenseChartData(data)
+> 10 |         setChartData(result)
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  11 |
+  12 |         return () => { }
+  13 |     }, [data])  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Dashboard\RecentIncomeWithChart.jsx
+  18:9  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  16 |
+  17 |     useEffect(() => {
+> 18 |         prepareChartData()
+     |         ^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  19 |
+  20 |         return () => { }
+  21 |     }, [data])  react-hooks/set-state-in-effect
+  21:8  warning  React Hook useEffect has a missing dependency: 'prepareChartData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Expense\AddExpenseForm.jsx
+  16:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  14 |     useEffect(() => {
+  15 |         if (initialData) {
+> 16 |             setExpense({
+     |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  17 |                 category: initialData.category || '',
+  18 |                 amount: initialData.amount || '',
+  19 |                 date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : '',  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Expense\ExpenseOverview.jsx
+  11:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+   9 |     useEffect(() => {
+  10 |         const result = prepareExpenseLineChartData(transactions)
+> 11 |         setChartData(result)
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  12 |
+  13 |         return () => { }
+  14 |     }, [transactions])  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\GithubStarButton.jsx
+  41:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  39 |             return () => clearTimeout(showTimeout);
+  40 |         } else {
+> 41 |             handleHide();
+     |             ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  42 |         }
+  43 |     }, [isAuthPage, user]);
+  44 |  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Income\AddIncomeForm.jsx
+  15:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  13 |     useEffect(() => {
+  14 |         if (initialData) {
+> 15 |             setIncome({
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  16 |                 source: initialData.source || '',
+  17 |                 amount: initialData.amount || '',
+  18 |                 date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : '',  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\components\Income\IncomeOverview.jsx
+  12:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  10 |     useEffect(() => {
+  11 |         const result = prepareIncomeBarCharData(transactions)
+> 12 |         setChartData(result)
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  13 |
+  14 |         return () => { }
+  15 |     }, [transactions])  react-hooks/set-state-in-effect
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\context\UserContext.jsx
+  3:14  warning  Fast refresh only works when a file only exports components. Move your React context(s) to a separate file  react-refresh/only-export-components
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\pages\Auth\SignUp.jsx
+  19:12  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\pages\Dashboard\Expense.jsx
+  156:8  warning  React Hook useEffect has a missing dependency: 'fetchExpenseDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\pages\Dashboard\Home.jsx
+  46:8  warning  React Hook useEffect has a missing dependency: 'fetchDashboardData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\shriv\Desktop\projects\budgee\frontend\src\pages\Dashboard\Income.jsx
+  160:8  warning  React Hook useEffect has a missing dependency: 'fetchIncomeDetails'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Γ£û 14 problems (9 errors, 5 warnings)
+
