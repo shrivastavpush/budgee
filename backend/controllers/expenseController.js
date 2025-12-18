@@ -125,18 +125,21 @@ exports.updateExpense = async (req, res) => {
     const expenseIdStr = String(req.params.id);
     const userIdStr = String(req.user.id);
 
+    // Explicitly cast body fields to break taint flow
+    const updateData = {
+      icon: String(icon || ''),
+      category: String(category),
+      amount: Number(amount),
+      date: new Date(date)
+    };
+
     // Find and update the expense
     const updatedExpense = await Expense.findOneAndUpdate(
       {
         _id: new mongoose.Types.ObjectId(expenseIdStr),
         userId: userIdStr
       },
-      {
-        icon,
-        category,
-        amount,
-        date: new Date(date)
-      },
+      updateData,
       { new: true }
     )
 

@@ -125,18 +125,21 @@ exports.updateIncome = async (req, res) => {
     const incomeIdStr = String(req.params.id);
     const userIdStr = String(req.user.id);
 
+    // Explicitly cast body fields to break taint flow
+    const updateData = {
+      icon: String(icon || ''),
+      source: String(source),
+      amount: Number(amount),
+      date: new Date(date)
+    };
+
     // Find and update the income
     const updatedIncome = await Income.findOneAndUpdate(
       {
         _id: new mongoose.Types.ObjectId(incomeIdStr),
         userId: userIdStr
       },
-      {
-        icon,
-        source,
-        amount,
-        date: new Date(date)
-      },
+      updateData,
       { new: true }
     )
 
