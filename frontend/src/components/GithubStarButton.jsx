@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { FaGithub } from "react-icons/fa";
+import { FaGithub } from "../utils/icons";
 import { useLocation } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 

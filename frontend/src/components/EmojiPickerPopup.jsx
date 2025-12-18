@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import EmojiPicker from 'emoji-picker-react'
-import { LuImage, LuX } from 'react-icons/lu'
+import { LuImage, LuX } from '../utils/icons'
 
 const EmojiPickerPopup = ({ icon, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false)

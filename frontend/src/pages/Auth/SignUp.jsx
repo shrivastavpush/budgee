@@ -9,7 +9,7 @@ import { API_PATHS } from '../../utils/apiPaths'
 import { UserContext } from '../../context/UserContext'
 import uploadImage from '../../utils/uploadImage'
 import toast from 'react-hot-toast'
-import { LuLoader } from 'react-icons/lu'
+import { LuLoader } from '../../utils/icons'
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null)

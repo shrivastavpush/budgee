@@ -1,5 +1,5 @@
 import React from 'react'
-import { LuX } from 'react-icons/lu'
+import { LuX } from '../utils/icons'
 
 const Modal = ({ isOpen, onClose, title, children }) => {
 

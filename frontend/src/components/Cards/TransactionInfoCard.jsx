@@ -1,6 +1,5 @@
 import React from 'react'
-import { LuUtensils, LuTrendingUp, LuTrendingDown, LuTrash2 } from 'react-icons/lu'
-import { TbEdit } from "react-icons/tb";
+import { LuUtensils, LuTrendingUp, LuTrendingDown, LuTrash2, TbEdit } from '../../utils/icons'
 import { addThousandSeparator } from '../../utils/helper'
 
 const TransactionInfoCard = ({ title, icon, date, amount, type, hideDeleteBtn, onDelete, onEdit }) => {

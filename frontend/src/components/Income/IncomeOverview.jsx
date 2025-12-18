@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { LuPlus } from 'react-icons/lu'
+import { LuPlus } from '../../utils/icons'
 import CustomBarChart from '../Charts/CustomBarChart'
 import { prepareIncomeBarCharData } from '../../utils/helper'
 

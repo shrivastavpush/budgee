@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { LuPlus } from 'react-icons/lu'
+import { LuPlus } from '../../utils/icons'
 import CustomLineChart from '../Charts/CustomLineChart'
 import { prepareExpenseLineChartData } from '../../utils/helper'
 

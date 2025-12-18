@@ -3,7 +3,7 @@ import {
   LuHandCoins,
   LuWalletMinimal,
   LuLogOut
-} from 'react-icons/lu'
+} from './icons'
 
 export const SIDE_MENU_DATA = [
   {

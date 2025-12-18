@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { LuUser, LuUpload, LuTrash, } from 'react-icons/lu'
+import { LuUser, LuUpload, LuTrash, } from '../../utils/icons'
 import { toast } from 'react-hot-toast'
 
 const ProfilePhotoSelector = ({ image, setImage }) => {

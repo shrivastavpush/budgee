@@ -7,7 +7,7 @@ import axiosInsance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
 import { UserContext } from '../../context/UserContext'
 import toast from 'react-hot-toast'
-import { LuLoader } from 'react-icons/lu'
+import { LuLoader } from '../../utils/icons'
 
 const Login = () => {
   const [email, setEmail] = useState("")
