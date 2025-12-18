@@ -5,21 +5,14 @@ import { toast } from 'react-hot-toast'
 const ProfilePhotoSelector = ({ image, setImage }) => {
   const [prevURL, setPrevURL] = useState(null);
 
-  /* Safe URL generation */
+  /* Safe URL generation and cleanup */
   useEffect(() => {
-    if (image && typeof image === 'object') {
-      const url = URL.createObjectURL(image);
-      setPrevURL(url);
-
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    }
-    // If image is null or not an object (e.g. initial load), ensure prevURL is clear
-    if (!image) {
-      setPrevURL(null);
-    }
-  }, [image]);
+    return () => {
+      if (prevURL && typeof prevURL === 'string' && prevURL.startsWith('blob:')) {
+        URL.revokeObjectURL(prevURL);
+      }
+    };
+  }, [prevURL]);
 
   const inputRef = useRef(null);
 
@@ -35,12 +28,13 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
     }
 
     setImage(file);
-    // prevURL is handled by useEffect
+    const url = URL.createObjectURL(file);
+    setPrevURL(url);
   }
 
   const handleRemoveImage = () => {
     setImage(null);
-    // prevURL is handled by useEffect
+    setPrevURL(null);
 
     // Reset file input value so the same file can be selected again
     if (inputRef.current) {
@@ -72,7 +66,7 @@ const ProfilePhotoSelector = ({ image, setImage }) => {
         </div>
       ) : (
         <div className='relative'>
-          <img src={prevURL}
+          <img src={prevURL || (typeof image === 'string' ? image : null)}
             alt="profile photo"
             className='w-20 h-20 rounded-full object-cover
                         ' />

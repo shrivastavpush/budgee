@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     // Get user name from req.user (populated by authMiddleware)
-    let userName = req.user.fullName;
+    let userName = req.user && req.user.fullName ? req.user.fullName : "user";
     userName = sanitize(userName).replace(/\s+/g, '_');
     const timeOfUpload = Date.now();
     const safeName = sanitize(file.originalname).replace(/\s+/g, '_');
