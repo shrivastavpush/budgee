@@ -11,8 +11,27 @@ const dashboardRoutes = require('./routes/dashboardRoutes')
 
 const PORT = process.env.PORT || 5000
 
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
+const hpp = require('hpp');
+
 const app = express()
 app.set('trust proxy', 1);
+
+// Security Headers
+app.use(helmet());
+
+// Compress responses
+app.use(compression());
+
+// Prevent Parameter Pollution
+app.use(hpp());
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
