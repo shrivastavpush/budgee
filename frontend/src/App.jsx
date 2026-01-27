@@ -1,5 +1,10 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom'
 import Login from './pages/Auth/Login'
 import SignUp from './pages/Auth/SignUp'
 import Home from './pages/Dashboard/Home'
@@ -12,10 +17,11 @@ import GithubStarButton from './components/GithubStarButton'
 const Root = () => {
   const isAuthenticated = true
 
-  return !isAuthenticated ?
-    <Navigate to='/login' />
-    :
-    <Navigate to='/dashboard' />
+  return !isAuthenticated ? (
+    <Navigate to="/login" />
+  ) : (
+    <Navigate to="/dashboard" />
+  )
 }
 
 const App = () => {
@@ -23,12 +29,12 @@ const App = () => {
     <UserProvider>
       <Router>
         <Routes>
-          <Route path='/' element={<Root />} />
-          <Route path='/login' exact element={<Login />} />
-          <Route path='/signup' exact element={<SignUp />} />
-          <Route path='/dashboard' exact element={<Home />} />
-          <Route path='/income' exact element={<Income />} />
-          <Route path='/expense' exact element={<Expense />} />
+          <Route path="/" element={<Root />} />
+          <Route path="/login" exact element={<Login />} />
+          <Route path="/signup" exact element={<SignUp />} />
+          <Route path="/dashboard" exact element={<Home />} />
+          <Route path="/income" exact element={<Income />} />
+          <Route path="/expense" exact element={<Expense />} />
         </Routes>
         <GithubStarButton />
       </Router>
@@ -38,7 +44,7 @@ const App = () => {
           className: '',
           style: {
             fontSize: '13px',
-          }
+          },
         }}
       />
     </UserProvider>

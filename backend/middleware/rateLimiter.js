@@ -1,4 +1,4 @@
-const rateLimit = require('express-rate-limit');
+const rateLimit = require('express-rate-limit')
 
 // Rate limiter for authentication routes (more strict)
 const authLimiter = rateLimit({
@@ -8,7 +8,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: false, // Count successful attempts too
-});
+})
 
 // Rate limiter for database operations
 const dbLimiter = rateLimit({
@@ -18,7 +18,7 @@ const dbLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipFailedRequests: false, // Count failed attempts too
-});
+})
 
 // Rate limiter for regular API routes
 const apiLimiter = rateLimit({
@@ -27,7 +27,7 @@ const apiLimiter = rateLimit({
   message: 'Too many requests from this IP, please try again after 15 minutes',
   standardHeaders: true,
   legacyHeaders: false,
-});
+})
 
 // Rate limiter for file upload routes
 const uploadLimiter = rateLimit({
@@ -36,11 +36,11 @@ const uploadLimiter = rateLimit({
   message: 'Too many upload attempts, please try again after an hour',
   standardHeaders: true,
   legacyHeaders: false,
-});
+})
 
 module.exports = {
   authLimiter,
   dbLimiter,
   apiLimiter,
-  uploadLimiter
-}; 
+  uploadLimiter,
+}

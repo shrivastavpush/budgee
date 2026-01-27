@@ -14,32 +14,31 @@ import { LuLoader } from '../../utils/icons'
 
 const SignUp = () => {
   const [profilePic, setProfilePic] = useState(null)
-  const [fullName, setFullName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [fullName, setFullName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   const { updateUser } = useContext(UserContext)
   const navigate = useNavigate()
 
-
   const handleSignup = async (e) => {
     e.preventDefault()
 
-    let profileImageUrl = ""
+    let profileImageUrl = ''
 
     if (!fullName) {
-      toast.error("Please enter your name")
+      toast.error('Please enter your name')
       return
     }
 
     if (!validateEmail(email)) {
-      toast.error("Please enter a valid email address")
+      toast.error('Please enter a valid email address')
       return
     }
 
     if (!password) {
-      toast.error("Please enter the password")
+      toast.error('Please enter the password')
       return
     }
 
@@ -50,29 +49,28 @@ const SignUp = () => {
       //Uploading image if available
       if (profilePic) {
         const imageUploadRes = await uploadImage(profilePic, fullName)
-        profileImageUrl = imageUploadRes.imageUrl || ""
+        profileImageUrl = imageUploadRes.imageUrl || ''
       }
 
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         fullName,
         email,
         password,
-        profileImageUrl
+        profileImageUrl,
       })
 
       const { token, user } = response.data
       if (token) {
-        localStorage.setItem("token", token)
+        localStorage.setItem('token', token)
         updateUser(user)
         navigate('/dashboard')
-        toast.success("Signup successful")
+        toast.success('Signup successful')
       }
-
     } catch (error) {
       if (error.response && error.response.data.message) {
         toast.error(error.response.data.message)
       } else {
-        toast.error("Something went wrong. Please try again.")
+        toast.error('Something went wrong. Please try again.')
       }
     } finally {
       setIsLoading(false)
@@ -81,14 +79,14 @@ const SignUp = () => {
 
   return (
     <AuthLayout>
-      <div className='lg:w-full flex flex-col justify-center'>
-        <h3 className='text-xl font-semibold text-black'>Create an account</h3>
-        <p className='text-sx text-slate-700 mt-[5px] mb-6'>Join us today by entering your details</p>
+      <div className="lg:w-full flex flex-col justify-center">
+        <h3 className="text-xl font-semibold text-black">Create an account</h3>
+        <p className="text-sx text-slate-700 mt-[5px] mb-6">
+          Join us today by entering your details
+        </p>
 
         <form action="" onSubmit={handleSignup}>
-          <ProfilePhotoSelector
-            image={profilePic}
-            setImage={setProfilePic} />
+          <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
 
           <div className="grid grid-cols-2 gap-x-4">
             <Input
@@ -98,7 +96,8 @@ const SignUp = () => {
               }}
               label="Full Name"
               placeholder="Enter your name"
-              type="text" />
+              type="text"
+            />
 
             <Input
               value={email}
@@ -107,7 +106,8 @@ const SignUp = () => {
               }}
               label="Email Address"
               placeholder="email@example.com"
-              type="text" />
+              type="text"
+            />
 
             <div className="col-span-2">
               <Input
@@ -117,22 +117,19 @@ const SignUp = () => {
                 }}
                 label="Password"
                 placeholder="Min 8 Characters"
-                type="password" />
+                type="password"
+              />
             </div>
           </div>
 
-          <Button
-            type='submit'
-            isLoading={isLoading}
-          >
+          <Button type="submit" isLoading={isLoading}>
             SIGN UP
           </Button>
 
-          <p className='text-[13px] text-slate-800 mt-3'>
+          <p className="text-[13px] text-slate-800 mt-3">
             Already have an account ? {''}
-            <Link
-              className='font-medium text-teal-400 underline' to='/login'
-            >Login
+            <Link className="font-medium text-teal-400 underline" to="/login">
+              Login
             </Link>
           </p>
         </form>

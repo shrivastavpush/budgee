@@ -6,15 +6,15 @@ const axiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
   headers: {
-    "Content-Type": "application/json",
-    Accept: "application/json",
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
   },
 })
 
 // Request Interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    const accessToken = localStorage.getItem("token")
+    const accessToken = localStorage.getItem('token')
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`
     }
@@ -38,13 +38,15 @@ axiosInstance.interceptors.response.use(
         window.location.href = '/login'
       } else if (error.response.status === 429) {
         // Rate limit error
-        const message = error.response.data?.message || 'Too many requests. Please try again later.'
+        const message =
+          error.response.data?.message ||
+          'Too many requests. Please try again later.'
         toast.error(message)
       } else if (error.response.status === 500) {
-        toast.error("Server error, Please try again later.")
+        toast.error('Server error, Please try again later.')
       }
-    } else if (error.code === "ECONNABORATED") {
-      toast.error("Request timeout, Please try again.")
+    } else if (error.code === 'ECONNABORATED') {
+      toast.error('Request timeout, Please try again.')
     }
     return Promise.reject(error)
   }

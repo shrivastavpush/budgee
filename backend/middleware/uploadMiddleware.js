@@ -1,7 +1,7 @@
 const multer = require('multer')
 
 // Use memory storage for ImageKit upload
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage()
 
 // File Filter
 const fileFilter = (req, file, cb) => {
@@ -9,7 +9,7 @@ const fileFilter = (req, file, cb) => {
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true)
   } else {
-    cb(new Error("Only .jpeg, .jpg and .png formats are allowed"), false)
+    cb(new Error('Only .jpeg, .jpg and .png formats are allowed'), false)
   }
 }
 
@@ -17,7 +17,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 } // 2MB
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
 })
 
 module.exports = upload

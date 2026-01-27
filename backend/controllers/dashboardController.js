@@ -18,18 +18,18 @@ exports.getDashboardData = async (req, res) => {
       totalExpense,
       last60DaysIncome,
       last30DaysExpense,
-      recentTransactions
+      recentTransactions,
     ] = await Promise.all([
       // Get total income
       Income.aggregate([
         { $match: { userId: userObjectId } },
-        { $group: { _id: null, total: { $sum: '$amount' } } }
+        { $group: { _id: null, total: { $sum: '$amount' } } },
       ]),
 
       // Get total expense
       Expense.aggregate([
         { $match: { userId: userObjectId } },
-        { $group: { _id: null, total: { $sum: '$amount' } } }
+        { $group: { _id: null, total: { $sum: '$amount' } } },
       ]),
 
       // Get last 60 days income with aggregation
@@ -37,16 +37,16 @@ exports.getDashboardData = async (req, res) => {
         {
           $match: {
             userId: userObjectId,
-            date: { $gte: sixtyDaysAgo }
-          }
+            date: { $gte: sixtyDaysAgo },
+          },
         },
         {
           $group: {
             _id: null,
             total: { $sum: '$amount' },
-            transactions: { $push: '$$ROOT' }
-          }
-        }
+            transactions: { $push: '$$ROOT' },
+          },
+        },
       ]),
 
       // Get last 30 days expense with aggregation
@@ -54,16 +54,16 @@ exports.getDashboardData = async (req, res) => {
         {
           $match: {
             userId: userObjectId,
-            date: { $gte: thirtyDaysAgo }
-          }
+            date: { $gte: thirtyDaysAgo },
+          },
         },
         {
           $group: {
             _id: null,
             total: { $sum: '$amount' },
-            transactions: { $push: '$$ROOT' }
-          }
-        }
+            transactions: { $push: '$$ROOT' },
+          },
+        },
       ]),
 
       // Get recent transactions using aggregation
@@ -78,10 +78,10 @@ exports.getDashboardData = async (req, res) => {
             amount: 1,
             date: 1,
             icon: 1,
-            type: { $literal: 'income' }
-          }
-        }
-      ])
+            type: { $literal: 'income' },
+          },
+        },
+      ]),
     ])
 
     // Get recent expenses and combine with income
@@ -96,29 +96,32 @@ exports.getDashboardData = async (req, res) => {
           amount: 1,
           date: 1,
           icon: 1,
-          type: { $literal: 'expense' }
-        }
-      }
+          type: { $literal: 'expense' },
+        },
+      },
     ])
 
     // Combine and sort recent transactions
-    const allRecentTransactions = [...recentTransactions, ...recentExpenses]
-      .sort((a, b) => new Date(b.date) - new Date(a.date))
+    const allRecentTransactions = [
+      ...recentTransactions,
+      ...recentExpenses,
+    ].sort((a, b) => new Date(b.date) - new Date(a.date))
 
     // Prepare response
     res.json({
-      totalBalance: (totalIncome[0]?.total || 0) - (totalExpense[0]?.total || 0),
+      totalBalance:
+        (totalIncome[0]?.total || 0) - (totalExpense[0]?.total || 0),
       totalIncome: totalIncome[0]?.total || 0,
       totalExpense: totalExpense[0]?.total || 0,
       last30DaysExpenses: {
         total: last30DaysExpense[0]?.total || 0,
-        transactions: last30DaysExpense[0]?.transactions || []
+        transactions: last30DaysExpense[0]?.transactions || [],
       },
       last60DaysIncome: {
         total: last60DaysIncome[0]?.total || 0,
-        transactions: last60DaysIncome[0]?.transactions || []
+        transactions: last60DaysIncome[0]?.transactions || [],
       },
-      recentTransactions: allRecentTransactions
+      recentTransactions: allRecentTransactions,
     })
   } catch (error) {
     console.error('Dashboard data error:', error)

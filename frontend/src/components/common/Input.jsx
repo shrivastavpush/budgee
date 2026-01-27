@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { FaRegEye, FaRegEyeSlash } from '../../utils/icons'
 
 const Input = ({ value, label, onChange, placeholder, type }) => {
-
   const [showPassword, setShowPassword] = useState(false)
 
   const togglePassword = () => {
@@ -10,30 +9,34 @@ const Input = ({ value, label, onChange, placeholder, type }) => {
   }
 
   return (
-    <div className='flex flex-col'>
-      <label className='text-[13px] text-slate-800'>{label}</label>
+    <div className="flex flex-col">
+      <label className="text-[13px] text-slate-800">{label}</label>
 
-      <div className='input-box'>
+      <div className="input-box">
         <input
-          className='w-full bg-transparent outline-none'
+          className="w-full bg-transparent outline-none"
           value={value}
           onChange={(e) => onChange(e)}
           placeholder={placeholder}
-          type={type === 'password' ? showPassword ? 'text' : 'password' : type}
+          type={
+            type === 'password' ? (showPassword ? 'text' : 'password') : type
+          }
         />
 
         {type === 'password' && (
           <>
             {showPassword ? (
-              < FaRegEye
+              <FaRegEye
                 size={22}
-                className='text-teal-400  cursor-pointer '
-                onClick={() => togglePassword()} />
+                className="text-teal-400  cursor-pointer "
+                onClick={() => togglePassword()}
+              />
             ) : (
-              < FaRegEyeSlash
+              <FaRegEyeSlash
                 size={22}
-                className='text-slate-400 cursor-pointer '
-                onClick={() => togglePassword()} />
+                className="text-slate-400 cursor-pointer "
+                onClick={() => togglePassword()}
+              />
             )}
           </>
         )}

@@ -2,32 +2,32 @@ import {
   LuLayoutDashboard,
   LuHandCoins,
   LuWalletMinimal,
-  LuLogOut
+  LuLogOut,
 } from './icons'
 
 export const SIDE_MENU_DATA = [
   {
-    id: "01",
-    label: "Dashboard",
+    id: '01',
+    label: 'Dashboard',
     icon: LuLayoutDashboard,
-    path: '/dashboard'
+    path: '/dashboard',
   },
   {
-    id: "02",
-    label: "Income",
+    id: '02',
+    label: 'Income',
     icon: LuWalletMinimal,
-    path: '/income'
+    path: '/income',
   },
   {
-    id: "03",
-    label: "Expense",
+    id: '03',
+    label: 'Expense',
     icon: LuHandCoins,
-    path: '/expense'
+    path: '/expense',
   },
   {
-    id: "04",
-    label: "Logout",
+    id: '04',
+    label: 'Logout',
     icon: LuLogOut,
-    path: 'logout'
+    path: 'logout',
   },
 ]

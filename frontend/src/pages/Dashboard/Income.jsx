@@ -21,17 +21,17 @@ const Income = () => {
     addIncome,
     editIncome,
     deleteIncome,
-    downloadIncomeReport
+    downloadIncomeReport,
   } = useIncome()
 
   const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
   const [openEditIncomeModal, setOpenEditIncomeModal] = useState({
     show: false,
-    data: null
+    data: null,
   })
   const [openDeleteAlert, setOpenDeleteAlert] = useState({
     show: false,
-    data: null
+    data: null,
   })
 
   useEffect(() => {
@@ -55,9 +55,9 @@ const Income = () => {
 
   return (
     <DashboardLayout activeMenu="Income">
-      <div className='my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
-        <div className='grid grid-cols-1 gap-6'>
-          <div className=''>
+      <div className="my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="">
             {loading ? (
               <SkeletonCard type="chart" />
             ) : (
@@ -69,7 +69,7 @@ const Income = () => {
           </div>
         </div>
 
-        <div className='mt-6'>
+        <div className="mt-6">
           {loading ? (
             <SkeletonCard type="transaction" count={4} />
           ) : (
@@ -78,13 +78,13 @@ const Income = () => {
               onDelete={(id) => {
                 setOpenDeleteAlert({
                   show: true,
-                  data: id
+                  data: id,
                 })
               }}
               onEdit={(income) => {
                 setOpenEditIncomeModal({
                   show: true,
-                  data: income
+                  data: income,
                 })
               }}
               onDownload={downloadIncomeReport}
@@ -95,16 +95,16 @@ const Income = () => {
         <Modal
           isOpen={openAddIncomeModal}
           onClose={() => setOpenAddIncomeModal(false)}
-          title="Add Income">
-          <AddIncomeForm
-            onAddIncome={handleAddIncome}
-          />
+          title="Add Income"
+        >
+          <AddIncomeForm onAddIncome={handleAddIncome} />
         </Modal>
 
         <Modal
           isOpen={openEditIncomeModal.show}
           onClose={() => setOpenEditIncomeModal({ show: false, data: null })}
-          title="Edit Income">
+          title="Edit Income"
+        >
           <AddIncomeForm
             key={openEditIncomeModal.data?._id}
             initialData={openEditIncomeModal.data}
@@ -115,13 +115,12 @@ const Income = () => {
         <Modal
           isOpen={openDeleteAlert.show}
           onClose={() => setOpenDeleteAlert({ show: false, data: null })}
-          title="Delete Income">
-
+          title="Delete Income"
+        >
           <DeleteAlert
             message="Are you sure you want to delete this income?"
             onDelete={handleDeleteIncome}
           />
-
         </Modal>
       </div>
     </DashboardLayout>

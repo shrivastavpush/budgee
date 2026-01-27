@@ -28,9 +28,9 @@ const Home = () => {
 
   return (
     <DashboardLayout activeMenu="Dashboard">
-      <div className='my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
+      <div className="my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Info Cards Grid */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {loading ? (
             <>
               <SkeletonCard type="info" />
@@ -62,7 +62,7 @@ const Home = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6'>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           {/* First Row */}
           {loading ? (
             <>
@@ -95,7 +95,9 @@ const Home = () => {
                 data={dashboardData?.last30DaysExpenses?.transactions || []}
               />
               <ExpenseTransactoins
-                transactions={dashboardData?.last30DaysExpenses?.transactions || []}
+                transactions={
+                  dashboardData?.last30DaysExpenses?.transactions || []
+                }
                 onSeeMore={() => navigate('/expense')}
               />
             </>
@@ -110,10 +112,15 @@ const Home = () => {
           ) : (
             <>
               <RecentIncomeWithChart
-                data={dashboardData?.last60DaysIncome?.transactions?.slice(0, 4) || []}
+                data={
+                  dashboardData?.last60DaysIncome?.transactions?.slice(0, 4) ||
+                  []
+                }
               />
               <IncomeTransactoins
-                transactions={dashboardData?.last60DaysIncome?.transactions || []}
+                transactions={
+                  dashboardData?.last60DaysIncome?.transactions || []
+                }
                 onSeeMore={() => navigate('/income')}
               />
             </>

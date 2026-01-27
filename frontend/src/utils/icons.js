@@ -19,21 +19,10 @@ export {
   LuTrendingUpDown,
 } from 'react-icons/lu'
 
-export {
-  HiOutlineMenu,
-  HiOutlineX
-} from 'react-icons/hi'
+export { HiOutlineMenu, HiOutlineX } from 'react-icons/hi'
 
-export {
-  IoMdCard
-} from 'react-icons/io'
+export { IoMdCard } from 'react-icons/io'
 
-export {
-  FaRegEye,
-  FaRegEyeSlash,
-  FaGithub
-} from 'react-icons/fa'
+export { FaRegEye, FaRegEyeSlash, FaGithub } from 'react-icons/fa'
 
-export {
-  TbEdit
-} from 'react-icons/tb'
+export { TbEdit } from 'react-icons/tb'

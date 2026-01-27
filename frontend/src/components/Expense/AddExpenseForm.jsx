@@ -3,14 +3,15 @@ import EmojiPickerPopup from '../EmojiPickerPopup'
 import Input from '../common/Input'
 
 const AddExpenseForm = ({ onAddExpense, initialData }) => {
-
   const [expense, setExpense] = useState(() => {
     if (initialData) {
       return {
         amount: initialData.amount || '',
         icon: initialData.icon || '',
         category: initialData.category || '',
-        date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : '',
+        date: initialData.date
+          ? new Date(initialData.date).toISOString().split('T')[0]
+          : '',
       }
     }
     return {
@@ -24,7 +25,7 @@ const AddExpenseForm = ({ onAddExpense, initialData }) => {
   const handleChange = (key, value) => {
     setExpense((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
@@ -58,11 +59,12 @@ const AddExpenseForm = ({ onAddExpense, initialData }) => {
         type="date"
       />
 
-      <div className='flex justify-end my-6'>
+      <div className="flex justify-end my-6">
         <button
-          type='button'
-          className='add-btn add-btn-fill'
-          onClick={() => onAddExpense(expense)}>
+          type="button"
+          className="add-btn add-btn-fill"
+          onClick={() => onAddExpense(expense)}
+        >
           {initialData ? 'Update Expense' : 'Add Expense'}
         </button>
       </div>

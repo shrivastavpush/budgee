@@ -16,8 +16,8 @@ export const downloadFile = async (url, filename) => {
 
     return true
   } catch (error) {
-    console.error("Error downloading file:", error)
-    toast.error("Failed to download file. Try again.")
+    console.error('Error downloading file:', error)
+    toast.error('Failed to download file. Try again.')
     return false
   }
 }

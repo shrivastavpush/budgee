@@ -6,23 +6,28 @@ import Card from '../common/Card'
 
 const ExpenseList = ({ transactions, onDelete, onEdit, onDownload }) => {
   return (
-    <Card className='card'>
-      <div className='flex items-center justify-between'>
-        <h5 className='text-lg'>All Expenses</h5>
+    <Card className="card">
+      <div className="flex items-center justify-between">
+        <h5 className="text-lg">All Expenses</h5>
 
-        <button className={transactions?.length === 0 ? 'card-btn-disabled' : 'card-btn'} onClick={onDownload}>
-          <LuDownload className='text-base' /> Download
+        <button
+          className={
+            transactions?.length === 0 ? 'card-btn-disabled' : 'card-btn'
+          }
+          onClick={onDownload}
+        >
+          <LuDownload className="text-base" /> Download
         </button>
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-2'>
+      <div className="grid grid-cols-1 md:grid-cols-2">
         {transactions?.map((expense) => (
           <TransactionInfoCard
             type="expense"
             key={expense._id}
             title={expense.category}
             amount={expense.amount}
-            date={moment(expense.date).format("Do MM YYYY")}
+            date={moment(expense.date).format('Do MM YYYY')}
             icon={expense.icon}
             onDelete={() => onDelete(expense._id)}
             onEdit={() => onEdit(expense)}

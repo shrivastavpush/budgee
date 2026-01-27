@@ -1,49 +1,50 @@
-import { useState, useEffect, useContext } from 'react';
-import { FaGithub } from "../utils/icons";
-import { useLocation } from 'react-router-dom';
-import { UserContext } from '../context/UserContext';
+import { useState, useEffect, useContext } from 'react'
+import { FaGithub } from '../utils/icons'
+import { useLocation } from 'react-router-dom'
+import { UserContext } from '../context/UserContext'
 
 const GithubStarButton = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [isExiting, setIsExiting] = useState(false);
-  const location = useLocation();
-  const { user } = useContext(UserContext);
+  const [isVisible, setIsVisible] = useState(false)
+  const [isExiting, setIsExiting] = useState(false)
+  const location = useLocation()
+  const { user } = useContext(UserContext)
 
-  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+  const isAuthPage =
+    location.pathname === '/login' || location.pathname === '/signup'
 
   const handleHide = () => {
-    setIsExiting(true);
+    setIsExiting(true)
     setTimeout(() => {
-      setIsVisible(false);
-      setIsExiting(false);
-    }, 500);
-  };
+      setIsVisible(false)
+      setIsExiting(false)
+    }, 500)
+  }
 
   const handleClick = () => {
-    handleHide();
-    window.open('https://github.com/shrivastavpush/budgee', '_blank');
-  };
+    handleHide()
+    window.open('https://github.com/shrivastavpush/budgee', '_blank')
+  }
 
   useEffect(() => {
     if (isAuthPage && !user) {
       const showTimeout = setTimeout(() => {
-        setIsVisible(true);
+        setIsVisible(true)
 
         const hideTimeout = setTimeout(() => {
-          handleHide();
-        }, 10000);
+          handleHide()
+        }, 10000)
 
-        return () => clearTimeout(hideTimeout);
-      }, 5000);
+        return () => clearTimeout(hideTimeout)
+      }, 5000)
 
-      return () => clearTimeout(showTimeout);
+      return () => clearTimeout(showTimeout)
     } else {
-      const t = setTimeout(() => handleHide(), 0);
-      return () => clearTimeout(t);
+      const t = setTimeout(() => handleHide(), 0)
+      return () => clearTimeout(t)
     }
-  }, [isAuthPage, user]);
+  }, [isAuthPage, user])
 
-  if (!isVisible) return null;
+  if (!isVisible) return null
 
   return (
     <div
@@ -52,10 +53,11 @@ const GithubStarButton = () => {
     >
       <FaGithub className="sm:text-xl text-lg transition-transform group-hover:rotate-12 duration-300" />
       <span className="font-medium whitespace-nowrap">
-        <span className="sm:inline hidden">Liked this project?</span> Star on GitHub!
+        <span className="sm:inline hidden">Liked this project?</span> Star on
+        GitHub!
       </span>
     </div>
-  );
-};
+  )
+}
 
-export default GithubStarButton; 
+export default GithubStarButton

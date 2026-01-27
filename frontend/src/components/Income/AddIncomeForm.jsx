@@ -8,7 +8,9 @@ const AddIncomeForm = ({ onAddIncome, initialData }) => {
       return {
         source: initialData.source || '',
         amount: initialData.amount || '',
-        date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : '',
+        date: initialData.date
+          ? new Date(initialData.date).toISOString().split('T')[0]
+          : '',
         icon: initialData.icon || '',
       }
     }
@@ -23,7 +25,7 @@ const AddIncomeForm = ({ onAddIncome, initialData }) => {
   const handleChange = (key, value) => {
     setIncome((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }))
   }
 
@@ -57,11 +59,12 @@ const AddIncomeForm = ({ onAddIncome, initialData }) => {
         type="date"
       />
 
-      <div className='flex justify-end my-6'>
+      <div className="flex justify-end my-6">
         <button
-          type='button'
-          className='add-btn add-btn-fill'
-          onClick={() => onAddIncome(income)}>
+          type="button"
+          className="add-btn add-btn-fill"
+          onClick={() => onAddIncome(income)}
+        >
           {initialData ? 'Update Income' : 'Add Income'}
         </button>
       </div>

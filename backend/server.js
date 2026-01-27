@@ -1,4 +1,4 @@
-require("dotenv").config()
+require('dotenv').config()
 const express = require('express')
 const mongoSanitize = require('express-mongo-sanitize')
 const cors = require('cors')
@@ -12,51 +12,51 @@ const dashboardRoutes = require('./routes/dashboardRoutes')
 
 const PORT = process.env.PORT || 5000
 
-const helmet = require('helmet');
-const compression = require('compression');
-const morgan = require('morgan');
-const hpp = require('hpp');
+const helmet = require('helmet')
+const compression = require('compression')
+const morgan = require('morgan')
+const hpp = require('hpp')
 
 const app = express()
-app.set('trust proxy', 1);
+app.set('trust proxy', 1)
 
 // Security Headers
-app.use(helmet());
+app.use(helmet())
 
 // Compress responses
-app.use(compression());
+app.use(compression())
 
 // Prevent Parameter Pollution
-app.use(hpp());
+app.use(hpp())
 
 // Logging
 if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
+  app.use(morgan('dev'))
 }
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  "http://localhost:5173",
-  "https://budgeee.vercel.app"
-];
+  'http://localhost:5173',
+  'https://budgeee.vercel.app',
+]
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
+        callback(null, true)
       } else {
-        console.error(`Blocked by CORS from origin: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
+        console.error(`Blocked by CORS from origin: ${origin}`)
+        callback(new Error('Not allowed by CORS'))
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
-);
+)
 
-app.options(/(.*)/, cors());
+app.options(/(.*)/, cors())
 
 app.use(express.json())
 app.use(mongoSanitize())
@@ -64,13 +64,13 @@ app.use(mongoSanitize())
 connectDB()
 setupCron()
 
-app.use("/api/v1/auth", authRoutes)
-app.use("/api/v1/income", incomeRoutes)
-app.use("/api/v1/expense", expenseRoutes)
-app.use("/api/v1/dashboard", dashboardRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/income', incomeRoutes)
+app.use('/api/v1/expense', expenseRoutes)
+app.use('/api/v1/dashboard', dashboardRoutes)
 
 //Serving upload folder
-app.use('/uploads', express.static(path.join(__dirname, "uploads")))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`)
@@ -84,7 +84,7 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).json({
-    message: "Internal Server Error",
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
   })
 })
