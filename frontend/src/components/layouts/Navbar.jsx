@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { HiOutlineMenu, HiOutlineX } from '../../utils/icons'
 import SideMenu from './SideMenu'
-import Logo from '../../assets/Budgee.svg'
+import Logo from '../../assets/Budgee.png'
 
 const Navbar = ({ activeMenu }) => {
   const [openSideMenu, setOpenSideMenu] = useState(false)

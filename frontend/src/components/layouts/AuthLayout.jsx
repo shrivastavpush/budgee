@@ -1,7 +1,7 @@
 import React from 'react'
 import CARD_2 from '../../assets/images/banner-img.jpg'
 import { LuTrendingUpDown } from '../../utils/icons'
-import LOGO from '../../assets/Budgee.svg'
+import LOGO from '../../assets/Budgee.png'
 import CustomAutBarChart from '../Charts/CustomAutBarChart'
 import InfoCard from '../Cards/InfoCard'
 
