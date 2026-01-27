@@ -13,7 +13,7 @@ export const useIncome = () => {
     try {
       const response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME)
       if (response.data) {
-        setIncomeData(response.data)
+        setIncomeData(response.data.data || [])
       }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error)

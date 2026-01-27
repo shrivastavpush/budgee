@@ -13,7 +13,7 @@ export const useExpense = () => {
     try {
       const response = await axiosInstance.get(API_PATHS.EXPENSE.GET_ALL_EXPENSE)
       if (response.data) {
-        setExpenseData(response.data)
+        setExpenseData(response.data.data || [])
       }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error)
