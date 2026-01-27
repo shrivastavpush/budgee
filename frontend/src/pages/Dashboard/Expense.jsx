@@ -1,22 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import { useUserAuth } from '../../hooks/useUserAuth'
 import DashboardLayout from '../../components/layouts/DashboardLayout'
+import { useExpense } from '../../hooks/useExpense'
 
-import axiosInstance from '../../utils/axiosInstance'
-import { API_PATHS } from '../../utils/apiPaths'
-import toast from 'react-hot-toast'
 import ExpenseOverview from '../../components/Expense/ExpenseOverview'
 import AddExpenseForm from '../../components/Expense/AddExpenseForm'
+import ExpenseList from '../../components/Expense/ExpenseList'
+
 import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
-import ExpenseList from '../../components/Expense/ExpenseList'
 import SkeletonCard from '../../components/Cards/SkeletonCard'
 
 const Expense = () => {
   useUserAuth()
 
-  const [expenseData, setExpenseData] = useState([])
-  const [loading, setLoading] = useState(false)
+  const {
+    expenseData,
+    loading,
+    fetchExpenseDetails,
+    addExpense,
+    editExpense,
+    deleteExpense,
+    downloadExpenseReport
+  } = useExpense()
+
   const [openAddExpenseModal, setOpenAddExpenseModal] = useState(false)
   const [openEditExpenseModal, setOpenEditExpenseModal] = useState({
     show: false,
@@ -27,133 +34,24 @@ const Expense = () => {
     data: null
   })
 
-  const fetchExpenseDetails = async () => {
-    if (loading) return
-
-    setLoading(true)
-
-    try {
-      const response = await axiosInstance.get(
-        `${API_PATHS.EXPENSE.GET_ALL_EXPENSE}`
-      )
-
-      if (response.data) {
-        setExpenseData(response.data)
-      }
-    } catch (error) {
-      console.log("Something went wrong. Please try again.", error);
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Handle Add Expense
-  const handleAddExpense = async (expense) => {
-    const { category, amount, date, icon } = expense
-
-    if (!category.trim()) {
-      toast.error("Category is required")
-      return
-    }
-
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      toast.error("Amount should be a valid number greater than 0")
-      return
-    }
-
-    if (!date) {
-      toast.error("Date is required")
-      return
-    }
-
-    try {
-      const response = await axiosInstance.post(
-        `${API_PATHS.EXPENSE.ADD_EXPENSE}`,
-        { category, amount, date, icon }
-      )
-
-      if (response.data) {
-        setOpenAddExpenseModal(false)
-        fetchExpenseDetails()
-        toast.success("Expense added successfully")
-      }
-    } catch (error) {
-      console.log("Error while adding expense", error.response?.data?.message || error.message);
-    }
-  }
-
-  // Handle Edit Expense
-  const handleEditExpense = async (expense) => {
-    const { category, amount, date, icon } = expense
-
-    if (!category.trim()) {
-      toast.error("Category is required")
-      return
-    }
-
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
-      toast.error("Amount should be a valid number greater than 0")
-      return
-    }
-
-    if (!date) {
-      toast.error("Date is required")
-      return
-    }
-
-    try {
-      const response = await axiosInstance.patch(
-        `${API_PATHS.EXPENSE.UPDATE_EXPENSE(openEditExpenseModal.data._id)}`,
-        { category, amount, date, icon }
-      )
-
-      if (response.data) {
-        setOpenEditExpenseModal({ show: false, data: null })
-        toast.success("Expense updated successfully")
-        fetchExpenseDetails()
-      }
-    } catch (error) {
-      console.log("Error while updating expense", error.response?.data?.message || error.message);
-    }
-  }
-
-  // Delete Expense
-  const deleteExpense = async (id) => {
-    try {
-      await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_EXPENSE(id))
-
-      setOpenDeleteAlert({ show: false, data: null })
-      toast.success("Expense deleted successfully")
-      fetchExpenseDetails()
-    } catch (error) {
-      console.log("Error while deleting expense", error.response?.data?.message || error.message)
-      toast.error("Failed to delete expense. Try again.")
-    }
-  }
-
-  const handleDownloadExpenseDetails = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATHS.EXPENSE.DOWNLOAD_EXPENSE_EXCEL, { responseType: 'blob' });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'expense-details.xlsx');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.log("Error while downloading expense details", error.response?.data?.message || error.message);
-      toast.error("Failed to download expense details. Try again.");
-    }
-  }
-
   useEffect(() => {
     fetchExpenseDetails()
+  }, [fetchExpenseDetails])
 
-    return () => { }
-  }, [])
+  const handleAddExpense = async (expense) => {
+    const success = await addExpense(expense)
+    if (success) setOpenAddExpenseModal(false)
+  }
+
+  const handleEditExpense = async (expense) => {
+    const success = await editExpense(openEditExpenseModal.data._id, expense)
+    if (success) setOpenEditExpenseModal({ show: false, data: null })
+  }
+
+  const handleDeleteExpense = async () => {
+    const success = await deleteExpense(openDeleteAlert.data)
+    if (success) setOpenDeleteAlert({ show: false, data: null })
+  }
 
   return (
     <DashboardLayout activeMenu="Expense">
@@ -184,7 +82,7 @@ const Expense = () => {
                   data: expense
                 })
               }}
-              onDownload={handleDownloadExpenseDetails}
+              onDownload={downloadExpenseReport}
             />
           )}
         </div>
@@ -216,7 +114,7 @@ const Expense = () => {
 
           <DeleteAlert
             message="Are you sure you want to delete this expense?"
-            onDelete={() => deleteExpense(openDeleteAlert.data)}
+            onDelete={handleDeleteExpense}
           />
         </Modal>
       </div>

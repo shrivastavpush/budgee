@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import DashboardLayout from '../../components/layouts/DashboardLayout'
 import { useUserAuth } from '../../hooks/useUserAuth'
 import { useNavigate } from 'react-router-dom'
-import axiosInstance from '../../utils/axiosInstance'
-import { API_PATHS } from '../../utils/apiPaths'
 
 import InfoCard from '../../components/Cards/InfoCard'
 import SkeletonCard from '../../components/Cards/SkeletonCard'
@@ -17,32 +15,16 @@ import IncomeTransactoins from '../../components/Dashboard/IncomeTransactoins'
 import Last30DayExpenses from '../../components/Dashboard/Last30DayExpenses'
 import RecentIncomeWithChart from '../../components/Dashboard/RecentIncomeWithChart'
 
+import { useDashboard } from '../../hooks/useDashboard'
+
 const Home = () => {
   useUserAuth()
   const navigate = useNavigate()
-  const [dashboardData, setDashboardData] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  const fetchDashboardData = async () => {
-    if (loading) return true
-    setLoading(true)
-
-    try {
-      const response = await axiosInstance.get(`${API_PATHS.DASHBOARD.GET_DATA}`)
-      if (response.data) {
-        setDashboardData(response.data)
-      }
-    } catch (error) {
-      console.log("Something went wrong. Please try again.", error)
-    } finally {
-      setLoading(false)
-    }
-  }
+  const { dashboardData, loading, fetchDashboardData } = useDashboard()
 
   useEffect(() => {
     fetchDashboardData()
-    return () => { }
-  }, [])
+  }, [fetchDashboardData])
 
   return (
     <DashboardLayout activeMenu="Dashboard">

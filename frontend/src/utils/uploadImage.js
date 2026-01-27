@@ -16,7 +16,7 @@ const uploadImage = async (imageFile, username = "user") => {
     })
     return response.data
   } catch (error) {
-    console.log("Error uploading the image", error);
+    console.error("Error uploading the image", error);
     throw error
   }
 }

@@ -2,13 +2,14 @@ import React, { useMemo } from 'react'
 import { LuPlus } from '../../utils/icons'
 import CustomBarChart from '../Charts/CustomBarChart'
 import { prepareIncomeBarCharData } from '../../utils/helper'
+import Card from '../common/Card'
 
 const IncomeOverview = ({ transactions, onAddIncome }) => {
 
   const chartData = useMemo(() => prepareIncomeBarCharData(transactions), [transactions])
 
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex justify-between items-center'>
         <div className=''>
           <h5 className='text-lg'>Income Overview</h5>
@@ -23,7 +24,7 @@ const IncomeOverview = ({ transactions, onAddIncome }) => {
       <div className='mt-10'>
         <CustomBarChart data={chartData} color1="#00c951" color2="#4ADE80" />
       </div>
-    </div>
+    </Card>
   )
 }
 

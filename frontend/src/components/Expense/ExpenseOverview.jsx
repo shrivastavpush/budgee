@@ -2,12 +2,13 @@ import React, { useMemo } from 'react'
 import { LuPlus } from '../../utils/icons'
 import CustomLineChart from '../Charts/CustomLineChart'
 import { prepareExpenseLineChartData } from '../../utils/helper'
+import Card from '../common/Card'
 
 const ExpenseOverview = ({ transactions, onAddExpense }) => {
   const chartData = useMemo(() => prepareExpenseLineChartData(transactions), [transactions])
 
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex justify-between items-center'>
         <div className=''>
           <h5 className='text-lg'>Expense Overview</h5>
@@ -22,7 +23,7 @@ const ExpenseOverview = ({ transactions, onAddExpense }) => {
       <div className='mt-10'>
         <CustomLineChart data={chartData} stopColor="#fb2c2c" fillColor="#fb2c2c" />
       </div>
-    </div>
+    </Card>
   )
 }
 

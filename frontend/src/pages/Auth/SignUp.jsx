@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react'
 import AuthLayout from '../../components/layouts/AuthLayout'
 import { Link, useNavigate } from 'react-router-dom'
-import Input from '../../components/Inputs/Input'
+import Input from '../../components/common/Input'
+import Button from '../../components/common/Button'
 import ProfilePhotoSelector from '../../components/Inputs/ProfilePhotoSelector'
 import { validateEmail } from '../../utils/helper'
 import axiosInstance from '../../utils/axiosInstance'
@@ -80,7 +81,7 @@ const SignUp = () => {
 
   return (
     <AuthLayout>
-      <div className='lg:w-[100%] flex flex-col justify-center'>
+      <div className='lg:w-full flex flex-col justify-center'>
         <h3 className='text-xl font-semibold text-black'>Create an account</h3>
         <p className='text-sx text-slate-700 mt-[5px] mb-6'>Join us today by entering your details</p>
 
@@ -120,20 +121,12 @@ const SignUp = () => {
             </div>
           </div>
 
-          <button
+          <Button
             type='submit'
-            className='btn-primary flex items-center justify-center gap-2'
-            disabled={isLoading}
+            isLoading={isLoading}
           >
-            {isLoading ? (
-              <>
-                <LuLoader className="animate-spin" />
-                <span>Signing up...</span>
-              </>
-            ) : (
-              'SIGN UP'
-            )}
-          </button>
+            SIGN UP
+          </Button>
 
           <p className='text-[13px] text-slate-800 mt-3'>
             Already have an account ? {''}

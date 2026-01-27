@@ -2,11 +2,12 @@ import React from 'react'
 import { LuArrowRight } from '../../utils/icons'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 import moment from 'moment'
+import Card from '../common/Card'
 
 const ExpenseTransactoins = ({ transactions, onSeeMore }) => {
 
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex items-center justify-between'>
         <h5 className='text-lg'>Expenses</h5>
 
@@ -34,7 +35,7 @@ const ExpenseTransactoins = ({ transactions, onSeeMore }) => {
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

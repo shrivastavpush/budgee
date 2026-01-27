@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthLayout from '../../components/layouts/AuthLayout'
-import Input from '../../components/Inputs/Input'
+import Input from '../../components/common/Input'
+import Button from '../../components/common/Button'
 import { validateEmail } from '../../utils/helper'
 import axiosInsance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
@@ -89,20 +90,12 @@ const Login = () => {
             <p className='text-red-500 text-xs pb-2.5'>{error}</p>
           }
 
-          <button
+          <Button
             type='submit'
-            className='btn-primary flex items-center justify-center gap-2'
-            disabled={isLoading}
+            isLoading={isLoading}
           >
-            {isLoading ? (
-              <>
-                <LuLoader className="animate-spin" />
-                <span>Logging in...</span>
-              </>
-            ) : (
-              'LOGIN'
-            )}
-          </button>
+            LOGIN
+          </Button>
 
           <p className='text-[13px] text-slate-800 mt-3'>
             Don't have an account ? {''}

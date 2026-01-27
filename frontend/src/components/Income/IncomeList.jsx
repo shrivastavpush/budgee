@@ -2,10 +2,11 @@ import React from 'react'
 import moment from 'moment'
 import { LuDownload } from '../../utils/icons'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
+import Card from '../common/Card'
 
 const IncomeList = ({ transactions, onDelete, onEdit, onDownload }) => {
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex items-center justify-between'>
         <h5 className='text-lg'>Income Sources</h5>
 
@@ -28,7 +29,7 @@ const IncomeList = ({ transactions, onDelete, onEdit, onDownload }) => {
           />
         ))}
       </div>
-    </div>
+    </Card>
   )
 }
 

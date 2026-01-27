@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react'
-import { prepareExpsenseChartData } from '../../utils/helper'
+import { prepareExpenseLineChartData } from '../../utils/helper'
 import CustomBarChart from '../Charts/CustomBarChart'
+import Card from '../common/Card'
 
 const Last30DayExpenses = ({ data }) => {
-  const chartData = useMemo(() => prepareExpsenseChartData(data), [data])
+  const chartData = useMemo(() => prepareExpenseLineChartData(data), [data])
 
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex flex-col gap-4'>
         <h5 className='text-lg'>Last 30 Days Expenses</h5>
 
@@ -21,7 +22,7 @@ const Last30DayExpenses = ({ data }) => {
           </div>
         )}
       </div>
-    </div>
+    </Card>
   )
 }
 

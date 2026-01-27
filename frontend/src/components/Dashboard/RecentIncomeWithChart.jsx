@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import CustomLineChart from '../Charts/CustomLineChart'
+import Card from '../common/Card'
 
 const RecentIncomeWithChart = ({ data }) => {
 
@@ -11,7 +12,7 @@ const RecentIncomeWithChart = ({ data }) => {
   }, [data])
 
   return (
-    <div className='card'>
+    <Card className='card'>
       <div className='flex items-center justify-between'>
         <h5 className='text-lg'>Last 60 Days Income</h5>
       </div>
@@ -26,7 +27,7 @@ const RecentIncomeWithChart = ({ data }) => {
           <p className="text-sm text-gray-400 mt-2">Add your first income to see the chart</p>
         </div>
       )}
-    </div>
+    </Card>
   )
 }
 
