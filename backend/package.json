@@ -29,7 +29,7 @@
     "mongodb": "^7.0.0",
     "mongoose": "^9.0.2",
     "morgan": "^1.10.1",
-    "multer": "^2.1.0",
+    "multer": "^2.1.1",
     "sanitize-filename": "^1.6.3",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
