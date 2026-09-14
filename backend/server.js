@@ -1,6 +1,5 @@
 require('dotenv').config()
 const express = require('express')
-const mongoSanitize = require('express-mongo-sanitize')
 const cors = require('cors')
 const path = require('path')
 const connectDB = require('./config/db')
@@ -9,6 +8,7 @@ const authRoutes = require('./routes/authRoutes')
 const incomeRoutes = require('./routes/incomeRoutes')
 const expenseRoutes = require('./routes/expenseRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
+const sanitizeRequest = require('./middleware/sanitize')
 
 const PORT = process.env.PORT || 5000
 
@@ -59,7 +59,7 @@ app.use(
 app.options(/(.*)/, cors())
 
 app.use(express.json())
-app.use(mongoSanitize())
+app.use(sanitizeRequest)
 
 connectDB()
 setupCron()
