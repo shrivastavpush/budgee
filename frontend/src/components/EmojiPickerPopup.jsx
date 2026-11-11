@@ -35,6 +35,7 @@ const EmojiPickerPopup = ({ icon, onSelect }) => {
 
           <EmojiPicker
             open={isOpen}
+            emojiStyle="apple"
             onEmojiClick={(emoji) => {
               onSelect(emoji?.imageUrl || '')
               setIsOpen(false)
