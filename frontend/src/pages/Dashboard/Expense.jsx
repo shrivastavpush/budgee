@@ -22,6 +22,7 @@ const Expense = () => {
     editExpense,
     deleteExpense,
     downloadExpenseReport,
+    pagination,
   } = useExpense()
 
   const [openAddExpenseModal, setOpenAddExpenseModal] = useState(false)
@@ -83,6 +84,8 @@ const Expense = () => {
                 })
               }}
               onDownload={downloadExpenseReport}
+              pagination={pagination}
+              onPageChange={fetchExpenseDetails}
             />
           )}
         </div>

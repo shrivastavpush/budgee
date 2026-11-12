@@ -1,8 +1,21 @@
 const imagekit = require('../config/imageKit')
 
+const MIME_TO_EXT = {
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+}
+
 exports.uploadImage = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ message: 'No file uploaded' })
+  }
+
+  const ext = MIME_TO_EXT[req.file.mimetype]
+  if (!ext) {
+    return res
+      .status(400)
+      .json({ message: 'Only .jpeg, .jpg and .png formats are allowed' })
   }
 
   try {
@@ -18,8 +31,6 @@ exports.uploadImage = async (req, res) => {
       String(now.getHours()).padStart(2, '0') +
       String(now.getMinutes()).padStart(2, '0')
 
-    // Extract extension (default to .jpg if missing)
-    const ext = req.file.originalname.split('.').pop() || 'jpg'
     const customFileName = `${username}_${date}_${time}.${ext}`
 
     const result = await imagekit.upload({

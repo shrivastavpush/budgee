@@ -1,10 +1,17 @@
 import React from 'react'
-import moment from 'moment'
 import { LuDownload } from '../../utils/icons'
+import { formatTransactionDate } from '../../utils/helper'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 import Card from '../common/Card'
 
-const IncomeList = ({ transactions, onDelete, onEdit, onDownload }) => {
+const IncomeList = ({
+  transactions,
+  onDelete,
+  onEdit,
+  onDownload,
+  pagination,
+  onPageChange,
+}) => {
   return (
     <Card className="card">
       <div className="flex items-center justify-between">
@@ -27,13 +34,37 @@ const IncomeList = ({ transactions, onDelete, onEdit, onDownload }) => {
             key={income._id}
             title={income.source}
             amount={income.amount}
-            date={moment(income.date).format('Do MM YYYY')}
+            date={formatTransactionDate(income.date)}
             icon={income.icon}
             onDelete={() => onDelete(income._id)}
             onEdit={() => onEdit(income)}
           />
         ))}
       </div>
+
+      {pagination?.pages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <button
+            type="button"
+            className="card-btn"
+            disabled={pagination.page <= 1}
+            onClick={() => onPageChange(pagination.page - 1)}
+          >
+            Previous
+          </button>
+          <span className="text-sm text-gray-500">
+            Page {pagination.page} of {pagination.pages}
+          </span>
+          <button
+            type="button"
+            className="card-btn"
+            disabled={pagination.page >= pagination.pages}
+            onClick={() => onPageChange(pagination.page + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </Card>
   )
 }

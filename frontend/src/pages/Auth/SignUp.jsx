@@ -7,7 +7,7 @@ import ProfilePhotoSelector from '../../components/Inputs/ProfilePhotoSelector'
 import { validateEmail } from '../../utils/helper'
 import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
-import { UserContext } from '../../context/UserContext'
+import { UserContext } from '../../context/UserContextValue'
 import uploadImage from '../../utils/uploadImage'
 import toast from 'react-hot-toast'
 import { LuLoader } from '../../utils/icons'
@@ -37,8 +37,8 @@ const SignUp = () => {
       return
     }
 
-    if (!password) {
-      toast.error('Please enter the password')
+    if (!password || password.length < 8) {
+      toast.error('Password must be at least 8 characters')
       return
     }
 

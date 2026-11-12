@@ -1,25 +1,23 @@
-import React, { createContext, useState } from 'react'
-
-export const UserContext = createContext()
+import React, { useCallback, useMemo, useState } from 'react'
+import { UserContext } from './UserContextValue'
 
 const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null)
 
-  //Function to update user data
-  const updateUser = (userData) => {
+  const updateUser = useCallback((userData) => {
     setUser(userData)
-  }
+  }, [])
 
-  //Function to clear user data (e.g logout)
-  const clearUser = () => {
+  const clearUser = useCallback(() => {
     setUser(null)
-  }
+  }, [])
 
-  return (
-    <UserContext.Provider value={{ user, updateUser, clearUser }}>
-      {children}
-    </UserContext.Provider>
+  const value = useMemo(
+    () => ({ user, updateUser, clearUser }),
+    [user, updateUser, clearUser]
   )
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }
 
 export default UserProvider

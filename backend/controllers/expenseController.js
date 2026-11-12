@@ -1,8 +1,12 @@
 const xlsx = require('xlsx')
 const mongoose = require('mongoose')
 const Expense = require('../models/Expense')
+const {
+  parsePositiveAmount,
+  parseTransactionDate,
+  parsePageLimit,
+} = require('../utils/transactionQuery')
 
-// add Expense
 exports.addExpense = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -10,11 +14,16 @@ exports.addExpense = async (req, res, next) => {
   }
 
   try {
-    const { icon, category, amount, date } = req.body
+    const category =
+      typeof req.body.category === 'string' ? req.body.category.trim() : ''
+    const amount = parsePositiveAmount(req.body.amount)
+    const date = parseTransactionDate(req.body.date)
+    const icon = typeof req.body.icon === 'string' ? req.body.icon : ''
 
-    //checking for missing fields
-    if (!category || !amount || !date) {
-      return res.status(400).json({ message: 'All fields are required' })
+    if (!category || amount == null || !date) {
+      return res.status(400).json({
+        message: 'Category, a positive amount, and a valid date are required',
+      })
     }
 
     const newExpense = new Expense({
@@ -22,17 +31,16 @@ exports.addExpense = async (req, res, next) => {
       icon,
       category,
       amount,
-      date: new Date(date),
+      date,
     })
 
     await newExpense.save()
-    res.status(200).json(newExpense)
+    res.status(201).json(newExpense)
   } catch (error) {
     next(error)
   }
 }
 
-// get all Expense with pagination
 exports.getAllExpense = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -40,18 +48,13 @@ exports.getAllExpense = async (req, res, next) => {
   }
 
   try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 0 // 0 means no limit (all docs)
-    const skip = (page - 1) * limit
+    const { page, limit, skip } = parsePageLimit(req.query)
+    const filter = { userId }
 
-    let query = Expense.find({ userId }).sort({ date: -1 })
-
-    if (limit > 0) {
-      query = query.skip(skip).limit(limit)
-    }
-
-    const expense = await query
-    const total = await Expense.countDocuments({ userId })
+    const [expense, total] = await Promise.all([
+      Expense.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+      Expense.countDocuments(filter),
+    ])
 
     res.json({
       data: expense,
@@ -59,7 +62,7 @@ exports.getAllExpense = async (req, res, next) => {
         total,
         page,
         limit,
-        pages: limit > 0 ? Math.ceil(total / limit) : 1,
+        pages: Math.max(Math.ceil(total / limit), 1),
       },
     })
   } catch (error) {
@@ -67,7 +70,6 @@ exports.getAllExpense = async (req, res, next) => {
   }
 }
 
-// delete Expense
 exports.deleteExpense = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -80,7 +82,7 @@ exports.deleteExpense = async (req, res, next) => {
 
   try {
     const deletedExpense = await Expense.findOneAndDelete({
-      _id: new mongoose.Types.ObjectId(req.params.id),
+      _id: req.params.id,
       userId,
     })
 
@@ -96,7 +98,6 @@ exports.deleteExpense = async (req, res, next) => {
   }
 }
 
-// downlaod excel
 exports.downloadExpenseExcel = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -106,7 +107,6 @@ exports.downloadExpenseExcel = async (req, res, next) => {
   try {
     const expense = await Expense.find({ userId }).sort({ date: -1 })
 
-    //Preparing data for Excel
     const data = expense.map((item) => ({
       Category: item.category,
       Amount: item.amount,
@@ -134,7 +134,6 @@ exports.downloadExpenseExcel = async (req, res, next) => {
   }
 }
 
-// update expense
 exports.updateExpense = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -146,26 +145,24 @@ exports.updateExpense = async (req, res, next) => {
   }
 
   try {
-    const { icon, category, amount, date } = req.body
-    // Verify param is string (safe-guard)
-    const expenseIdStr = String(req.params.id)
-    const userIdStr = String(req.user.id)
+    const category =
+      typeof req.body.category === 'string' ? req.body.category.trim() : ''
+    const amount = parsePositiveAmount(req.body.amount)
+    const date = parseTransactionDate(req.body.date)
+    const icon = typeof req.body.icon === 'string' ? req.body.icon : ''
 
-    // Explicitly cast body fields to break taint flow
-    const updateData = {
-      icon: String(icon || ''),
-      category: String(category),
-      amount: Number(amount),
-      date: new Date(date),
+    if (!category || amount == null || !date) {
+      return res.status(400).json({
+        message: 'Category, a positive amount, and a valid date are required',
+      })
     }
 
-    // Find and update the expense
     const updatedExpense = await Expense.findOneAndUpdate(
       {
-        _id: new mongoose.Types.ObjectId(expenseIdStr),
-        userId: userIdStr,
+        _id: req.params.id,
+        userId,
       },
-      updateData,
+      { icon, category, amount, date },
       { new: true }
     )
 

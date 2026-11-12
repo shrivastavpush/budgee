@@ -1,4 +1,17 @@
-import moment from 'moment'
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 export const validateEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -8,14 +21,12 @@ export const validateEmail = (email) => {
 export const getInitials = (name) => {
   if (!name) return ''
 
-  const words = name.split('')
-  let initials = ''
-
-  for (let i = 0; i < Math.min(words.length, 2); i++) {
-    initials += words[i][0]
-  }
-
-  return initials.toLocaleUpperCase()
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  return words
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join('')
+    .toLocaleUpperCase()
 }
 
 export const addThousandSeparator = (num) => {
@@ -23,7 +34,6 @@ export const addThousandSeparator = (num) => {
 
   const [integerPart, fractionalPart] = num.toString().split('.')
 
-  // Apply the Indian numbering format
   let lastThree = integerPart.slice(-3)
   let rest = integerPart.slice(0, -3)
 
@@ -38,44 +48,53 @@ export const addThousandSeparator = (num) => {
     : formattedInteger
 }
 
-export const prepareExpsenseChartData = (data = []) => {
-  const sortedData = [...data].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  )
+const ordinalDay = (day) => {
+  const mod100 = day % 100
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`
 
-  const chartData = sortedData.map((item) => ({
-    month: moment(item?.date).format('D-MMM-YYYY'),
-    category: item?.category,
-    amount: item?.amount,
-  }))
-
-  return chartData
+  switch (day % 10) {
+    case 1:
+      return `${day}st`
+    case 2:
+      return `${day}nd`
+    case 3:
+      return `${day}rd`
+    default:
+      return `${day}th`
+  }
 }
 
-export const prepareIncomeBarCharData = (data = []) => {
-  const sortedData = [...data].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  )
+export const formatTransactionDate = (value, style = 'list') => {
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
 
-  const chartData = sortedData.map((item) => ({
-    month: moment(item?.date).format('D-MMM-YYYY'),
-    category: item?.source,
-    amount: item?.amount,
-  }))
+  const day = date.getDate()
+  const month = date.getMonth()
+  const year = date.getFullYear()
 
-  return chartData
+  if (style === 'chart') {
+    return `${day}-${MONTHS[month]}-${year}`
+  }
+
+  if (style === 'recent') {
+    return `${ordinalDay(day)} ${MONTHS[month]} ${year}`
+  }
+
+  return `${ordinalDay(day)} ${String(month + 1).padStart(2, '0')} ${year}`
 }
 
-export const prepareExpenseLineChartData = (data = []) => {
-  const sortedData = [...data].sort(
-    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-  )
-
-  const chartData = sortedData.map((item) => ({
-    month: moment(item?.date).format('D-MMM-YYYY'),
-    category: item?.category,
-    amount: item?.amount,
-  }))
-
-  return chartData
+export const prepareChartData = (data = [], labelKey) => {
+  return [...data]
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .map((item) => ({
+      month: formatTransactionDate(item?.date, 'chart'),
+      category: item?.[labelKey],
+      amount: item?.amount,
+    }))
 }
+
+export const prepareIncomeBarCharData = (data = []) =>
+  prepareChartData(data, 'source')
+
+export const prepareExpenseLineChartData = (data = []) =>
+  prepareChartData(data, 'category')

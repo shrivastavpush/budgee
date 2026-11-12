@@ -4,16 +4,14 @@ import AuthLayout from '../../components/layouts/AuthLayout'
 import Input from '../../components/common/Input'
 import Button from '../../components/common/Button'
 import { validateEmail } from '../../utils/helper'
-import axiosInsance from '../../utils/axiosInstance'
+import axiosInstance from '../../utils/axiosInstance'
 import { API_PATHS } from '../../utils/apiPaths'
-import { UserContext } from '../../context/UserContext'
+import { UserContext } from '../../context/UserContextValue'
 import toast from 'react-hot-toast'
-import { LuLoader } from '../../utils/icons'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
   const { updateUser } = useContext(UserContext)
@@ -23,23 +21,19 @@ const Login = () => {
     e.preventDefault()
 
     if (!validateEmail(email)) {
-      // setError("Please enter a valid email address")
       toast.error('Please enter a valid email address')
       return
     }
 
     if (!password) {
-      // setError("Please enter the password")
       toast.error('Please enter the password')
       return
     }
 
-    setError('')
     setIsLoading(true)
 
-    // Login API Call
     try {
-      const response = await axiosInsance.post(API_PATHS.AUTH.LOGIN, {
+      const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
         email,
         password,
       })
@@ -54,10 +48,8 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response && error.response.data.message) {
-        // setError(error.response.data.message)
         toast.error(error.response.data.message)
       } else {
-        // setError("Something went wrong. Please try again.")
         toast.error('Something went wrong. Please try again.')
       }
     } finally {
@@ -89,8 +81,6 @@ const Login = () => {
             placeholder="Min 8 Characters"
             type="password"
           />
-
-          {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
           <Button type="submit" isLoading={isLoading}>
             LOGIN

@@ -1,8 +1,8 @@
 import React from 'react'
 import { LuArrowRight } from '../../utils/icons'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
-import moment from 'moment'
 import Card from '../common/Card'
+import { formatTransactionDate } from '../../utils/helper'
 
 const ExpenseTransactoins = ({ transactions, onSeeMore }) => {
   return (
@@ -23,7 +23,7 @@ const ExpenseTransactoins = ({ transactions, onSeeMore }) => {
                 key={expense._id}
                 title={expense.category}
                 icon={expense.icon}
-                date={moment(expense.date).format('Do MM YYYY')}
+                date={formatTransactionDate(expense.date)}
                 amount={expense.amount}
                 type="expense"
                 hideDeleteBtn

@@ -10,26 +10,24 @@ const expenseRoutes = require('./routes/expenseRoutes')
 const dashboardRoutes = require('./routes/dashboardRoutes')
 const sanitizeRequest = require('./middleware/sanitize')
 
-const PORT = process.env.PORT || 5000
-
 const helmet = require('helmet')
 const compression = require('compression')
 const morgan = require('morgan')
 const hpp = require('hpp')
 
+const PORT = process.env.PORT || 5000
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET is not set')
+}
+
 const app = express()
 app.set('trust proxy', 1)
 
-// Security Headers
 app.use(helmet())
-
-// Compress responses
 app.use(compression())
-
-// Prevent Parameter Pollution
 app.use(hpp())
 
-// Logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
@@ -37,8 +35,8 @@ if (process.env.NODE_ENV === 'development') {
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'http://localhost:5173',
-  'https://budgeee.vercel.app',
-]
+  'https://budgee-rho.vercel.app',
+].filter(Boolean)
 
 app.use(
   cors({
@@ -61,30 +59,44 @@ app.options(/(.*)/, cors())
 app.use(express.json())
 app.use(sanitizeRequest)
 
-connectDB()
-setupCron()
-
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/income', incomeRoutes)
 app.use('/api/v1/expense', expenseRoutes)
 app.use('/api/v1/dashboard', dashboardRoutes)
 
-//Serving upload folder
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-})
 
 app.get('/', (req, res) => {
   res.send('This is budgee backend - with realtime data update')
 })
 
-// Global Error Handler
-app.use((err, req, res, next) => {
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' })
+})
+
+app.use((err, req, res, _next) => {
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ message: 'Not allowed by CORS' })
+  }
+
   console.error(err.stack)
   res.status(500).json({
     message: 'Internal Server Error',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined,
   })
 })
+
+const start = async () => {
+  try {
+    await connectDB()
+    setupCron()
+    app.listen(PORT, () => {
+      console.log(`App listening on port ${PORT}`)
+    })
+  } catch (error) {
+    console.log('Error connecting MongoDB', error)
+    process.exit(1)
+  }
+}
+
+start()

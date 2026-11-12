@@ -119,10 +119,13 @@ Budgee is a comprehensive personal finance management application designed to he
    Create `.env` file:
 
    ```
-   MONGODB_URI=your_mongodb_connection_string
+   MONGO_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
-   BACKEND_URL=http://localhost:8000
+   CLIENT_URL=http://localhost:5173
    PORT=8000
+   IMAGEKIT_PUBLIC_KEY=your_imagekit_public_key
+   IMAGEKIT_PRIVATE_KEY=your_imagekit_private_key
+   IMAGEKIT_URL_ENDPOINT=your_imagekit_url_endpoint
    ```
 
 3. **Frontend Setup**
@@ -135,7 +138,7 @@ Budgee is a comprehensive personal finance management application designed to he
    Create `.env` file:
 
    ```
-   VITE_API_URL=http://localhost:8000
+   VITE_BACKEND_URL=http://localhost:8000
    ```
 
 4. **Start the Application**

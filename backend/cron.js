@@ -3,7 +3,6 @@ const https = require('https')
 const setupCron = () => {
   const backendUrl = process.env.RENDER_EXTERNAL_URL
 
-  // Only run if the environment variable is present (Production/Render)
   if (!backendUrl) {
     console.log(
       'No RENDER_EXTERNAL_URL environment variable found. Skipping keep-alive cron.'
@@ -13,8 +12,7 @@ const setupCron = () => {
 
   console.log(`Initializing keep-alive cron for: ${backendUrl}`)
 
-  // Ping the server every 14 minutes (render spins down after 15 mins of inactivity)
-  setInterval(
+  const timer = setInterval(
     () => {
       https
         .get(backendUrl, (res) => {
@@ -32,6 +30,8 @@ const setupCron = () => {
     },
     14 * 60 * 1000
   )
+
+  timer.unref()
 }
 
 module.exports = setupCron

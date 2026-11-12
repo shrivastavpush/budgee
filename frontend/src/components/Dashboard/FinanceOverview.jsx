@@ -2,14 +2,13 @@ import React from 'react'
 import CustomPieChart from '../Charts/CustomPieChart'
 import Card from '../common/Card'
 
-const COLORS = ['#8e51ff', '#00c951', '#fb2c36']
+const COLORS = ['#00c951', '#fb2c36']
 
 const FinanceOverview = ({ totalBalance, totalIncome, totalExpense }) => {
   const balanceData = [
-    { name: 'Total Balance', amount: totalBalance },
-    { name: 'Total Income', amount: totalIncome },
-    { name: 'Total Expenses', amount: totalExpense },
-  ]
+    { name: 'Total Income', amount: Math.max(totalIncome, 0) },
+    { name: 'Total Expenses', amount: Math.max(totalExpense, 0) },
+  ].filter((item) => item.amount > 0)
 
   return (
     <Card className="card">

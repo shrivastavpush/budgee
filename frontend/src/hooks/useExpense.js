@@ -1,21 +1,43 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import axiosInstance from '../utils/axiosInstance'
 import { API_PATHS } from '../utils/apiPaths'
 import { downloadFile } from '../utils/downloadUtils'
 import toast from 'react-hot-toast'
 
+const PAGE_SIZE = 20
+
 export const useExpense = () => {
   const [expenseData, setExpenseData] = useState([])
   const [loading, setLoading] = useState(false)
+  const [pagination, setPagination] = useState(null)
+  const pageRef = useRef(1)
 
-  const fetchExpenseDetails = useCallback(async () => {
+  const fetchExpenseDetails = useCallback(async (requestedPage) => {
+    const nextPage =
+      Number.isInteger(requestedPage) && requestedPage > 0
+        ? requestedPage
+        : pageRef.current || 1
     setLoading(true)
     try {
-      const response = await axiosInstance.get(
-        API_PATHS.EXPENSE.GET_ALL_EXPENSE
+      let response = await axiosInstance.get(
+        API_PATHS.EXPENSE.GET_ALL_EXPENSE,
+        { params: { page: nextPage, limit: PAGE_SIZE } }
       )
       if (response.data) {
-        setExpenseData(response.data.data || [])
+        let data = response.data.data || []
+        let currentPage = nextPage
+        if (data.length === 0 && nextPage > 1) {
+          const lastPage = response.data.pagination?.pages || nextPage - 1
+          currentPage = Math.max(1, Math.min(nextPage - 1, lastPage))
+          response = await axiosInstance.get(
+            API_PATHS.EXPENSE.GET_ALL_EXPENSE,
+            { params: { page: currentPage, limit: PAGE_SIZE } }
+          )
+          data = response.data?.data || []
+        }
+        setExpenseData(data)
+        setPagination(response.data.pagination)
+        pageRef.current = response.data.pagination?.page || currentPage
       }
     } catch (error) {
       console.error('Something went wrong. Please try again.', error)
@@ -42,7 +64,7 @@ export const useExpense = () => {
       })
       if (response.data) {
         toast.success('Expense added successfully')
-        fetchExpenseDetails()
+        fetchExpenseDetails(1)
         return true
       }
     } catch (error) {
@@ -100,6 +122,7 @@ export const useExpense = () => {
   return {
     expenseData,
     loading,
+    pagination,
     fetchExpenseDetails,
     addExpense,
     editExpense,

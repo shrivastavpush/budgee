@@ -1,8 +1,12 @@
 const xlsx = require('xlsx')
 const mongoose = require('mongoose')
 const Income = require('../models/Income')
+const {
+  parsePositiveAmount,
+  parseTransactionDate,
+  parsePageLimit,
+} = require('../utils/transactionQuery')
 
-// add income
 exports.addIncome = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -10,11 +14,16 @@ exports.addIncome = async (req, res, next) => {
   }
 
   try {
-    const { icon, source, amount, date } = req.body
+    const source =
+      typeof req.body.source === 'string' ? req.body.source.trim() : ''
+    const amount = parsePositiveAmount(req.body.amount)
+    const date = parseTransactionDate(req.body.date)
+    const icon = typeof req.body.icon === 'string' ? req.body.icon : ''
 
-    //checking for missing fields - Basic validation
-    if (!source || !amount || !date) {
-      return res.status(400).json({ message: 'All fields are required' })
+    if (!source || amount == null || !date) {
+      return res.status(400).json({
+        message: 'Source, a positive amount, and a valid date are required',
+      })
     }
 
     const newIncome = new Income({
@@ -22,17 +31,16 @@ exports.addIncome = async (req, res, next) => {
       icon,
       source,
       amount,
-      date: new Date(date),
+      date,
     })
 
     await newIncome.save()
-    res.status(200).json(newIncome)
+    res.status(201).json(newIncome)
   } catch (error) {
     next(error)
   }
 }
 
-// get all income with pagination
 exports.getAllIncome = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -40,18 +48,13 @@ exports.getAllIncome = async (req, res, next) => {
   }
 
   try {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 0 // 0 means no limit (all docs)
-    const skip = (page - 1) * limit
+    const { page, limit, skip } = parsePageLimit(req.query)
+    const filter = { userId }
 
-    let query = Income.find({ userId }).sort({ date: -1 })
-
-    if (limit > 0) {
-      query = query.skip(skip).limit(limit)
-    }
-
-    const income = await query
-    const total = await Income.countDocuments({ userId })
+    const [income, total] = await Promise.all([
+      Income.find(filter).sort({ date: -1 }).skip(skip).limit(limit),
+      Income.countDocuments(filter),
+    ])
 
     res.json({
       data: income,
@@ -59,7 +62,7 @@ exports.getAllIncome = async (req, res, next) => {
         total,
         page,
         limit,
-        pages: limit > 0 ? Math.ceil(total / limit) : 1,
+        pages: Math.max(Math.ceil(total / limit), 1),
       },
     })
   } catch (error) {
@@ -67,7 +70,6 @@ exports.getAllIncome = async (req, res, next) => {
   }
 }
 
-// delete income
 exports.deleteIncome = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -80,7 +82,7 @@ exports.deleteIncome = async (req, res, next) => {
 
   try {
     const deletedIncome = await Income.findOneAndDelete({
-      _id: new mongoose.Types.ObjectId(req.params.id),
+      _id: req.params.id,
       userId,
     })
 
@@ -96,7 +98,6 @@ exports.deleteIncome = async (req, res, next) => {
   }
 }
 
-// downlaod excel
 exports.downloadIncomeExcel = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -106,7 +107,6 @@ exports.downloadIncomeExcel = async (req, res, next) => {
   try {
     const income = await Income.find({ userId }).sort({ date: -1 })
 
-    //Preparing data for Excel
     const data = income.map((item) => ({
       Source: item.source,
       Amount: item.amount,
@@ -134,7 +134,6 @@ exports.downloadIncomeExcel = async (req, res, next) => {
   }
 }
 
-// update incomes
 exports.updateIncome = async (req, res, next) => {
   const userId = req.user.id
   if (!userId) {
@@ -146,26 +145,24 @@ exports.updateIncome = async (req, res, next) => {
   }
 
   try {
-    const { icon, source, amount, date } = req.body
-    // Verify param is string (safe-guard)
-    const incomeIdStr = String(req.params.id)
-    const userIdStr = String(req.user.id)
+    const source =
+      typeof req.body.source === 'string' ? req.body.source.trim() : ''
+    const amount = parsePositiveAmount(req.body.amount)
+    const date = parseTransactionDate(req.body.date)
+    const icon = typeof req.body.icon === 'string' ? req.body.icon : ''
 
-    // Explicitly cast body fields to break taint flow
-    const updateData = {
-      icon: String(icon || ''),
-      source: String(source),
-      amount: Number(amount),
-      date: new Date(date),
+    if (!source || amount == null || !date) {
+      return res.status(400).json({
+        message: 'Source, a positive amount, and a valid date are required',
+      })
     }
 
-    // Find and update the income
     const updatedIncome = await Income.findOneAndUpdate(
       {
-        _id: new mongoose.Types.ObjectId(incomeIdStr),
-        userId: userIdStr,
+        _id: req.params.id,
+        userId,
       },
-      updateData,
+      { icon, source, amount, date },
       { new: true }
     )
 

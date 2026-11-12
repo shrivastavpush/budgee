@@ -22,6 +22,7 @@ const Income = () => {
     editIncome,
     deleteIncome,
     downloadIncomeReport,
+    pagination,
   } = useIncome()
 
   const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
@@ -88,6 +89,8 @@ const Income = () => {
                 })
               }}
               onDownload={downloadIncomeReport}
+              pagination={pagination}
+              onPageChange={fetchIncomeDetails}
             />
           )}
         </div>

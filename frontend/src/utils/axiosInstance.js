@@ -34,8 +34,11 @@ axiosInstance.interceptors.response.use(
     //Handle common errors globally
     if (error.response) {
       if (error.response.status === 401) {
-        //Redirect to login page
-        window.location.href = '/login'
+        const path = window.location.pathname
+        if (path !== '/login' && path !== '/signup') {
+          localStorage.removeItem('token')
+          window.location.href = '/login'
+        }
       } else if (error.response.status === 429) {
         // Rate limit error
         const message =
@@ -45,7 +48,7 @@ axiosInstance.interceptors.response.use(
       } else if (error.response.status === 500) {
         toast.error('Server error, Please try again later.')
       }
-    } else if (error.code === 'ECONNABORATED') {
+    } else if (error.code === 'ECONNABORTED') {
       toast.error('Request timeout, Please try again.')
     }
     return Promise.reject(error)

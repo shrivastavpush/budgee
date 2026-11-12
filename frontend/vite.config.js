@@ -8,8 +8,15 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'dist',
-  },
-  server: {
-    historyApiFallback: true,
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          groups: [
+            { name: 'recharts', test: /recharts/ },
+            { name: 'emoji-picker', test: /emoji-picker-react/ },
+          ],
+        },
+      },
+    },
   },
 })

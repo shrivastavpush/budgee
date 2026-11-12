@@ -1,19 +1,41 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import axiosInstance from '../utils/axiosInstance'
 import { API_PATHS } from '../utils/apiPaths'
 import { downloadFile } from '../utils/downloadUtils'
 import toast from 'react-hot-toast'
 
+const PAGE_SIZE = 20
+
 export const useIncome = () => {
   const [incomeData, setIncomeData] = useState([])
   const [loading, setLoading] = useState(false)
+  const [pagination, setPagination] = useState(null)
+  const pageRef = useRef(1)
 
-  const fetchIncomeDetails = useCallback(async () => {
+  const fetchIncomeDetails = useCallback(async (requestedPage) => {
+    const nextPage =
+      Number.isInteger(requestedPage) && requestedPage > 0
+        ? requestedPage
+        : pageRef.current || 1
     setLoading(true)
     try {
-      const response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME)
+      let response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME, {
+        params: { page: nextPage, limit: PAGE_SIZE },
+      })
       if (response.data) {
-        setIncomeData(response.data.data || [])
+        let data = response.data.data || []
+        let currentPage = nextPage
+        if (data.length === 0 && nextPage > 1) {
+          const lastPage = response.data.pagination?.pages || nextPage - 1
+          currentPage = Math.max(1, Math.min(nextPage - 1, lastPage))
+          response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME, {
+            params: { page: currentPage, limit: PAGE_SIZE },
+          })
+          data = response.data?.data || []
+        }
+        setIncomeData(data)
+        setPagination(response.data.pagination)
+        pageRef.current = response.data.pagination?.page || currentPage
       }
     } catch (error) {
       console.error('Something went wrong. Please try again.', error)
@@ -41,7 +63,7 @@ export const useIncome = () => {
       })
       if (response.data) {
         toast.success('Income added successfully')
-        fetchIncomeDetails()
+        fetchIncomeDetails(1)
         return true
       }
     } catch (error) {
@@ -99,6 +121,7 @@ export const useIncome = () => {
   return {
     incomeData,
     loading,
+    pagination,
     fetchIncomeDetails,
     addIncome,
     editIncome,

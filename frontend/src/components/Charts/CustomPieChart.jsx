@@ -47,7 +47,7 @@ const CustomPieChart = ({
             return (
               <Cell
                 key={`cell-${index}`}
-                fill={colors[index & colors.length]}
+                fill={colors[index % colors.length]}
               />
             )
           })}

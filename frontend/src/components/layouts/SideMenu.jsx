@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { SIDE_MENU_DATA } from '../../utils/data'
-import { UserContext } from '../../context/UserContext'
+import { UserContext } from '../../context/UserContextValue'
 import { useNavigate } from 'react-router-dom'
 import CharAvatar from '../Cards/CharAvatar'
 import { toast } from 'react-hot-toast'
