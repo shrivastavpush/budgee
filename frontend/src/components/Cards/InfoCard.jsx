@@ -2,17 +2,17 @@ import React from 'react'
 
 const InfoCard = ({ icon, label, value, color }) => {
   return (
-    <div className="group flex gap-6 bg-white p-6 rounded-2xl shadow-md shadow-gray-100 border border-gray-200/50 hover:shadow-lg hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1">
+    <div className="summary-card group flex items-center gap-4 p-5 transition-all duration-300 hover:-translate-y-0.5 sm:p-6">
       <div
-        className={`w-14 h-14 flex items-center justify-center text-[26px] text-white ${color} rounded-full drop-shadow-xl group-hover:scale-110 transition-transform duration-300`}
+        className={`summary-card-icon flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl text-white ${color} transition-transform duration-300 group-hover:scale-105`}
       >
         {icon}
       </div>
       <div className="flex-1">
-        <h6 className="text-sm text-gray-500 mb-1 group-hover:text-gray-600 transition-colors duration-300">
+        <h6 className="summary-card-label mb-1 text-sm font-medium text-gray-500 transition-colors duration-300 group-hover:text-gray-600">
           {label}
         </h6>
-        <span className="text-[22px] font-semibold text-gray-800 group-hover:text-gray-900 transition-colors duration-300">
+        <span className="summary-card-value text-[22px] font-bold tracking-tight text-gray-900 tabular-nums">
           ₹{value}
         </span>
       </div>

@@ -59,19 +59,21 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="lg:w-[100%] flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Welcome Back</h3>
-        <p className="text-sx text-slate-700 mt-[5px] mb-6">
-          Login to your account to continue
+      <div className="auth-form-card flex flex-col justify-center">
+        <h3 className="text-xl font-bold tracking-tight text-gray-900">
+          Welcome back
+        </h3>
+        <p className="mt-1 mb-6 text-sm text-slate-700">
+          Sign in to pick up where you left off.
         </p>
 
-        <form action="" onSubmit={handleLogin}>
+        <form onSubmit={handleLogin}>
           <Input
             value={email}
             onChange={({ target }) => setEmail(target.value)}
             label="Email Address"
             placeholder="email@example.com"
-            type="text"
+            type="email"
           />
 
           <Input
@@ -83,13 +85,16 @@ const Login = () => {
           />
 
           <Button type="submit" isLoading={isLoading}>
-            LOGIN
+            Sign in
           </Button>
 
-          <p className="text-[13px] text-slate-800 mt-3">
-            Don't have an account ? {''}
-            <Link className="font-medium text-teal-400 underline" to="/signup">
-              SignUp
+          <p className="mt-4 text-center text-[13px] text-slate-800">
+            New to Budgee?{' '}
+            <Link
+              className="font-semibold text-teal-600 hover:underline"
+              to="/signup"
+            >
+              Create an account
             </Link>
           </p>
         </form>

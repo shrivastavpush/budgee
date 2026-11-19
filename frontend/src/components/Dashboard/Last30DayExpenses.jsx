@@ -9,14 +9,19 @@ const Last30DayExpenses = ({ data }) => {
   return (
     <Card className="card">
       <div className="flex flex-col gap-4">
-        <h5 className="text-lg">Last 30 Days Expenses</h5>
+        <div>
+          <h5>Last 30 days</h5>
+          <p className="mt-1 text-sm text-gray-500">
+            Your spending trend, month to date.
+          </p>
+        </div>
 
         {data?.length > 0 ? (
           <div className="w-full h-[300px]">
             <CustomBarChart
               data={chartData}
-              color1="#fb2c2c"
-              color2="#F87171"
+              color1="var(--accent-chart-light)"
+              color2="var(--accent-chart-dark)"
             />
           </div>
         ) : (

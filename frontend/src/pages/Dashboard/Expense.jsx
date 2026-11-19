@@ -10,6 +10,7 @@ import ExpenseList from '../../components/Expense/ExpenseList'
 import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
 import SkeletonCard from '../../components/Cards/SkeletonCard'
+import FloatingActionButton from '../../components/FloatingActionButton'
 
 const Expense = () => {
   useUserAuth()
@@ -56,21 +57,26 @@ const Expense = () => {
 
   return (
     <DashboardLayout activeMenu="Expense">
-      <div className="my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="space-y-6">
+        <header className="page-heading">
+          <p className="page-eyebrow">Understand where it all goes</p>
+          <h1 className="page-title">Expenses</h1>
+          <p className="page-description">
+            Track everyday spending and spot patterns over time.
+          </p>
+        </header>
+
         <div className="grid grid-cols-1 gap-6">
           <div className="">
             {loading ? (
               <SkeletonCard type="chart" />
             ) : (
-              <ExpenseOverview
-                transactions={expenseData}
-                onAddExpense={() => setOpenAddExpenseModal(true)}
-              />
+              <ExpenseOverview transactions={expenseData} />
             )}
           </div>
         </div>
 
-        <div className="mt-6">
+        <div>
           {loading ? (
             <SkeletonCard type="transaction" count={4} />
           ) : (
@@ -89,6 +95,15 @@ const Expense = () => {
             />
           )}
         </div>
+
+        <FloatingActionButton
+          actions={[
+            {
+              label: 'Add expense',
+              onClick: () => setOpenAddExpenseModal(true),
+            },
+          ]}
+        />
 
         <Modal
           isOpen={openAddExpenseModal}

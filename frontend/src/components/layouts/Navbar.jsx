@@ -1,33 +1,106 @@
-import React, { useState } from 'react'
-import { HiOutlineMenu, HiOutlineX } from '../../utils/icons'
-import SideMenu from './SideMenu'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
+import { LuChevronDown, LuLogOut } from '../../utils/icons'
+import { UserContext } from '../../context/UserContextValue'
+import CharAvatar from '../Cards/CharAvatar'
 import Logo from '../../assets/Budgee.png'
+import ThemeControls from '../ThemeControls'
 
-const Navbar = ({ activeMenu }) => {
-  const [openSideMenu, setOpenSideMenu] = useState(false)
+const Navbar = () => {
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef(null)
+  const { user, clearUser } = useContext(UserContext)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!profileMenuOpen) return
+
+    const closeOnOutsideClick = (event) => {
+      if (!profileMenuRef.current?.contains(event.target)) {
+        setProfileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsideClick)
+    return () =>
+      document.removeEventListener('pointerdown', closeOnOutsideClick)
+  }, [profileMenuOpen])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    clearUser()
+    setProfileMenuOpen(false)
+    navigate('/login')
+    toast.success('Logged out successfully')
+  }
+
   return (
-    <div className="flex gap-5 bg-white border border-b border-gray-200/50 backdrop-blur-[2px] py-4 px-7 sticky top-0 z-30 items-center md:shadow-md shadow-sm">
-      <button
-        className="block lg:hidden text-black cursor-pointer"
-        onClick={() => setOpenSideMenu(!openSideMenu)}
-      >
-        {openSideMenu ? (
-          <HiOutlineX className="text-2xl" />
-        ) : (
-          <HiOutlineMenu className="text-2xl" />
+    <header className="app-navbar sticky top-0 z-30 flex h-[68px] items-center gap-3 px-4 sm:px-7">
+      <img src={Logo} alt="" className="h-9 w-9 object-contain" />
+      <div>
+        <h2 className="text-base font-bold tracking-tight text-black sm:text-lg">
+          Budgee
+        </h2>
+        <p className="hidden text-[11px] text-gray-500 sm:block">
+          Your money, in balance.
+        </p>
+      </div>
+
+      <div className="ml-auto flex items-center gap-2 sm:gap-3">
+        <ThemeControls compact />
+        {user && (
+          <div className="profile-menu" ref={profileMenuRef}>
+            <button
+              type="button"
+              className="profile-menu-trigger"
+              aria-label="Open profile menu"
+              aria-expanded={profileMenuOpen}
+              onClick={() => setProfileMenuOpen((isOpen) => !isOpen)}
+            >
+              {user.profileImageUrl ? (
+                <img
+                  src={user.profileImageUrl}
+                  alt=""
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+              ) : (
+                <CharAvatar
+                  fullName={user.fullName || ''}
+                  width="h-10 w-10"
+                  height="h-10"
+                  style="text-sm font-bold"
+                />
+              )}
+              <LuChevronDown
+                className={`profile-menu-chevron ${profileMenuOpen ? 'is-open' : ''}`}
+                aria-hidden="true"
+              />
+            </button>
+
+            {profileMenuOpen && (
+              <div className="profile-menu-popover" role="menu">
+                <div className="profile-menu-identity">
+                  <p className="truncate text-sm font-semibold text-gray-900">
+                    {user.fullName}
+                  </p>
+                  <p className="truncate text-xs text-gray-500">{user.email}</p>
+                </div>
+                <button
+                  type="button"
+                  className="profile-menu-logout"
+                  role="menuitem"
+                  onClick={handleLogout}
+                >
+                  <LuLogOut aria-hidden="true" />
+                  <span>Log out</span>
+                </button>
+              </div>
+            )}
+          </div>
         )}
-      </button>
-
-      <img src={Logo} alt="logo" className="w-10 h-10" />
-
-      <h2 className="text-lg font-medium text-black">Expense Tracker</h2>
-
-      {openSideMenu && (
-        <div className="fixed top-[75px] -ml-7 h-[calc(100vh-5rem)]">
-          <SideMenu activeMenu={activeMenu} />
-        </div>
-      )}
-    </div>
+      </div>
+    </header>
   )
 }
 

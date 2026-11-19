@@ -1,5 +1,5 @@
 import React from 'react'
-import { LuDownload } from '../../utils/icons'
+import { LuDownload, LuWalletMinimal } from '../../utils/icons'
 import { formatTransactionDate } from '../../utils/helper'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 import Card from '../common/Card'
@@ -13,37 +13,56 @@ const IncomeList = ({
   onPageChange,
 }) => {
   return (
-    <Card className="card">
-      <div className="flex items-center justify-between">
-        <h5 className="text-lg">Income Sources</h5>
+    <Card className="transaction-list-card">
+      <div className="transaction-list-header">
+        <div>
+          <h5 className="text-lg">Income sources</h5>
+          <p className="text-sm text-gray-500">
+            A tidy view of every income stream.
+          </p>
+        </div>
 
         <button
+          type="button"
           className={
             transactions?.length === 0 ? 'card-btn-disabled' : 'card-btn'
           }
           onClick={onDownload}
+          disabled={transactions?.length === 0}
         >
           <LuDownload className="text-base" /> Download
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2">
-        {transactions?.map((income) => (
-          <TransactionInfoCard
-            type="income"
-            key={income._id}
-            title={income.source}
-            amount={income.amount}
-            date={formatTransactionDate(income.date)}
-            icon={income.icon}
-            onDelete={() => onDelete(income._id)}
-            onEdit={() => onEdit(income)}
-          />
-        ))}
-      </div>
+      {transactions?.length ? (
+        <div className="transaction-list-grid">
+          {transactions.map((income) => (
+            <TransactionInfoCard
+              type="income"
+              key={income._id}
+              title={income.source}
+              amount={income.amount}
+              date={formatTransactionDate(income.date)}
+              icon={income.icon}
+              onDelete={() => onDelete(income._id)}
+              onEdit={() => onEdit(income)}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="transaction-empty">
+          <span className="transaction-empty-icon">
+            <LuWalletMinimal aria-hidden="true" />
+          </span>
+          <p className="font-semibold text-gray-900">No income sources yet</p>
+          <p className="text-sm text-gray-500">
+            Add your first source to start tracking your progress.
+          </p>
+        </div>
+      )}
 
       {pagination?.pages > 1 && (
-        <div className="flex items-center justify-between mt-4">
+        <div className="transaction-pagination">
           <button
             type="button"
             className="card-btn"

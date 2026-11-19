@@ -9,6 +9,7 @@ import {
 import UserProvider from './context/UserContext'
 import { Toaster } from 'react-hot-toast'
 import GithubStarButton from './components/GithubStarButton'
+import { ThemeProvider } from './context/ThemeProvider'
 
 const Login = lazy(() => import('./pages/Auth/Login'))
 const SignUp = lazy(() => import('./pages/Auth/SignUp'))
@@ -49,66 +50,68 @@ const PageFallback = () => (
 
 const App = () => {
   return (
-    <UserProvider>
-      <Router>
-        <Suspense fallback={<PageFallback />}>
-          <Routes>
-            <Route path="/" element={<Root />} />
-            <Route
-              path="/login"
-              element={
-                <PublicRoute>
-                  <Login />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <PublicRoute>
-                  <SignUp />
-                </PublicRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <PrivateRoute>
-                  <Home />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/income"
-              element={
-                <PrivateRoute>
-                  <Income />
-                </PrivateRoute>
-              }
-            />
-            <Route
-              path="/expense"
-              element={
-                <PrivateRoute>
-                  <Expense />
-                </PrivateRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-        <GithubStarButton />
-      </Router>
+    <ThemeProvider>
+      <UserProvider>
+        <Router>
+          <Suspense fallback={<PageFallback />}>
+            <Routes>
+              <Route path="/" element={<Root />} />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/signup"
+                element={
+                  <PublicRoute>
+                    <SignUp />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Home />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/income"
+                element={
+                  <PrivateRoute>
+                    <Income />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/expense"
+                element={
+                  <PrivateRoute>
+                    <Expense />
+                  </PrivateRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <GithubStarButton />
+        </Router>
 
-      <Toaster
-        toastOptions={{
-          className: '',
-          style: {
-            fontSize: '13px',
-          },
-        }}
-      />
-    </UserProvider>
+        <Toaster
+          toastOptions={{
+            className: '',
+            style: {
+              fontSize: '13px',
+            },
+          }}
+        />
+      </UserProvider>
+    </ThemeProvider>
   )
 }
 

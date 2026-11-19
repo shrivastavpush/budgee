@@ -9,17 +9,14 @@ const Button = ({
   disabled,
   ...props
 }) => {
-  // Base classes suitable for most buttons
   const baseClasses =
-    'w-full text-sm font-medium p-[10px] cursor-pointer rounded-md my-1 flex items-center justify-center gap-2 transition-colors duration-200'
+    'flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-colors duration-200'
 
-  // Variants
   const variants = {
-    primary:
-      'text-white bg-teal-400 shadow-lg shadow-yellow-600/5 hover:bg-teal-500/30 hover:text-teal-600',
-    secondary: 'text-gray-700 bg-gray-100 hover:bg-gray-200',
-    danger: 'text-white bg-red-500 hover:bg-red-600',
-    outline: 'border border-teal-400 text-teal-400 hover:bg-teal-50',
+    primary: 'app-primary-button',
+    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    danger: 'bg-red-500 text-white hover:bg-red-600',
+    outline: 'border border-teal-400 text-teal-600 hover:bg-teal-50',
   }
 
   const disabledClasses = 'opacity-70 cursor-not-allowed'

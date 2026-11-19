@@ -16,21 +16,55 @@ import Last30DayExpenses from '../../components/Dashboard/Last30DayExpenses'
 import RecentIncomeWithChart from '../../components/Dashboard/RecentIncomeWithChart'
 
 import { useDashboard } from '../../hooks/useDashboard'
+import { useIncome } from '../../hooks/useIncome'
+import { useExpense } from '../../hooks/useExpense'
+import AddIncomeForm from '../../components/Income/AddIncomeForm'
+import AddExpenseForm from '../../components/Expense/AddExpenseForm'
+import FloatingActionButton from '../../components/FloatingActionButton'
+import Modal from '../../components/Modal'
 
 const Home = () => {
   useUserAuth()
   const navigate = useNavigate()
   const { dashboardData, loading, fetchDashboardData } = useDashboard()
+  const { addIncome } = useIncome()
+  const { addExpense } = useExpense()
+  const [quickAddType, setQuickAddType] = React.useState(null)
 
   useEffect(() => {
     fetchDashboardData()
   }, [fetchDashboardData])
 
+  const handleAddIncome = async (income) => {
+    const success = await addIncome(income)
+    if (success) {
+      await fetchDashboardData()
+      setQuickAddType(null)
+    }
+  }
+
+  const handleAddExpense = async (expense) => {
+    const success = await addExpense(expense)
+    if (success) {
+      await fetchDashboardData()
+      setQuickAddType(null)
+    }
+  }
+
   return (
     <DashboardLayout activeMenu="Dashboard">
-      <div className="my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Info Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-6">
+        <header className="page-heading flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div>
+            <p className="page-eyebrow">Your financial snapshot</p>
+            <h1 className="page-title">Dashboard</h1>
+            <p className="page-description">
+              A little clarity goes a long way.
+            </p>
+          </div>
+        </header>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {loading ? (
             <>
               <SkeletonCard type="info" />
@@ -61,9 +95,7 @@ const Home = () => {
           )}
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-          {/* First Row */}
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           {loading ? (
             <>
               <SkeletonCard type="chart" />
@@ -83,7 +115,6 @@ const Home = () => {
             </>
           )}
 
-          {/* Second Row */}
           {loading ? (
             <>
               <SkeletonCard type="chart" />
@@ -103,7 +134,6 @@ const Home = () => {
             </>
           )}
 
-          {/* Third Row */}
           {loading ? (
             <>
               <SkeletonCard type="chart" />
@@ -127,6 +157,37 @@ const Home = () => {
           )}
         </div>
       </div>
+
+      <FloatingActionButton
+        actions={[
+          {
+            label: 'Add income',
+            icon: LuWalletMinimal,
+            onClick: () => setQuickAddType('income'),
+          },
+          {
+            label: 'Add expense',
+            icon: LuHandCoins,
+            onClick: () => setQuickAddType('expense'),
+          },
+        ]}
+      />
+
+      <Modal
+        isOpen={quickAddType === 'income'}
+        onClose={() => setQuickAddType(null)}
+        title="Add income"
+      >
+        <AddIncomeForm onAddIncome={handleAddIncome} />
+      </Modal>
+
+      <Modal
+        isOpen={quickAddType === 'expense'}
+        onClose={() => setQuickAddType(null)}
+        title="Add expense"
+      >
+        <AddExpenseForm onAddExpense={handleAddExpense} />
+      </Modal>
     </DashboardLayout>
   )
 }

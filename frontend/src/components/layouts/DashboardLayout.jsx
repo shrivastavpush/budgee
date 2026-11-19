@@ -1,27 +1,24 @@
 import React, { useContext } from 'react'
 import { UserContext } from '../../context/UserContextValue'
 import Navbar from './Navbar'
-import SideMenu from './SideMenu'
+import DashboardDock from './DashboardDock'
 
 const DashboardLayout = ({ children, activeMenu }) => {
   const { user } = useContext(UserContext)
 
   return (
-    <>
-      <Navbar activeMenu={activeMenu} />
+    <div className="min-h-screen">
+      <Navbar />
 
       {user && (
-        <div className="flex">
-          <div className="max-[1080px]:hidden mt-0 md:mt-5 h-[calc(100vh-6rem-15px)]">
-            <SideMenu activeMenu={activeMenu} />
-          </div>
-
-          <div className="grow mx-0.5 md:mx-5 h-[calc(100vh-90px)] overflow-y-auto">
-            {children}
-          </div>
+        <div className="min-h-[calc(100vh-4.25rem)]">
+          <main className="app-content min-w-0 px-4 py-6 pb-32 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-[1440px]">{children}</div>
+          </main>
+          <DashboardDock activeMenu={activeMenu} />
         </div>
       )}
-    </>
+    </div>
   )
 }
 

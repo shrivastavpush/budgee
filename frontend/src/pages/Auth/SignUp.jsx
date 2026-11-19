@@ -79,16 +79,18 @@ const SignUp = () => {
 
   return (
     <AuthLayout>
-      <div className="lg:w-full flex flex-col justify-center">
-        <h3 className="text-xl font-semibold text-black">Create an account</h3>
-        <p className="text-sx text-slate-700 mt-[5px] mb-6">
-          Join us today by entering your details
+      <div className="auth-form-card flex flex-col justify-center">
+        <h3 className="text-xl font-bold tracking-tight text-gray-900">
+          Create your account
+        </h3>
+        <p className="mt-1 mb-5 text-sm text-slate-700">
+          Get a clearer view of your money, starting today.
         </p>
 
-        <form action="" onSubmit={handleSignup}>
+        <form onSubmit={handleSignup}>
           <ProfilePhotoSelector image={profilePic} setImage={setProfilePic} />
 
-          <div className="grid grid-cols-2 gap-x-4">
+          <div className="grid grid-cols-1 gap-x-4 sm:grid-cols-2">
             <Input
               value={fullName}
               onChange={({ target }) => {
@@ -96,7 +98,7 @@ const SignUp = () => {
               }}
               label="Full Name"
               placeholder="Enter your name"
-              type="text"
+              type="email"
             />
 
             <Input
@@ -126,10 +128,13 @@ const SignUp = () => {
             SIGN UP
           </Button>
 
-          <p className="text-[13px] text-slate-800 mt-3">
-            Already have an account ? {''}
-            <Link className="font-medium text-teal-400 underline" to="/login">
-              Login
+          <p className="mt-4 text-center text-[13px] text-slate-800">
+            Already have an account?{' '}
+            <Link
+              className="font-semibold text-teal-600 hover:underline"
+              to="/login"
+            >
+              Sign in
             </Link>
           </p>
         </form>

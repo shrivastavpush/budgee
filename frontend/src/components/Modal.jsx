@@ -22,7 +22,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-center items-center overflow-y-auto bg-black/20"
+      className="modal-overlay fixed inset-0 z-50 flex items-center justify-center overflow-y-auto p-2 sm:p-4"
       onClick={onClose}
     >
       <div
@@ -31,25 +31,28 @@ const Modal = ({ isOpen, onClose, title, children }) => {
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="relative w-full max-w-2xl max-h-full p-4 outline-none"
+        className="modal-dialog relative p-1 outline-none sm:p-2"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="relative bg-white rounded-lg shadow-sm">
-          <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-            <h3 id={titleId} className="text-lg font-medium text-gray-900">
+        <div className="modal-surface">
+          <div className="modal-header flex items-center justify-between">
+            <h3
+              id={titleId}
+              className="text-lg font-bold tracking-tight text-gray-900"
+            >
               {title}
             </h3>
             <button
               type="button"
               aria-label="Close"
               onClick={onClose}
-              className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex items-center justify-center cursor-pointer"
+              className="grid h-9 w-9 cursor-pointer place-items-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
             >
               <LuX />
             </button>
           </div>
 
-          <div className="p-4 md:p-5 space-y-4">{children}</div>
+          <div className="modal-content space-y-4">{children}</div>
         </div>
       </div>
     </div>

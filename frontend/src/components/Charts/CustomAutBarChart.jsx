@@ -5,6 +5,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from 'recharts'
 
 const data = [
@@ -20,12 +21,23 @@ const data = [
 export default function CustomBarChart() {
   return (
     <div className="bg-white rounded-2xl shadow-lg shadow-teal-400/10">
-      <ResponsiveContainer width="100%" height={400} className="pt-6 pr-6 pb-3">
+      <ResponsiveContainer width="100%" height={260} className="pt-4 pr-4 pb-2">
         <BarChart data={data}>
-          <XAxis dataKey="date" tick={{ fill: '#333' }} />
+          <XAxis dataKey="date" tick={{ fill: 'var(--text-secondary)' }} />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="value" fill="#2ccfc5" radius={[5, 5, 0, 0]} />
+          <Bar dataKey="value" radius={[5, 5, 0, 0]}>
+            {data.map((entry, index) => (
+              <Cell
+                key={entry.date}
+                fill={
+                  index % 2 === 0
+                    ? 'var(--accent-chart-light)'
+                    : 'var(--accent-chart-dark)'
+                }
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

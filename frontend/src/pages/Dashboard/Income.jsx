@@ -10,6 +10,7 @@ import IncomeList from '../../components/Income/IncomeList'
 import Modal from '../../components/Modal'
 import DeleteAlert from '../../components/DeleteAlert'
 import SkeletonCard from '../../components/Cards/SkeletonCard'
+import FloatingActionButton from '../../components/FloatingActionButton'
 
 const Income = () => {
   useUserAuth()
@@ -56,21 +57,26 @@ const Income = () => {
 
   return (
     <DashboardLayout activeMenu="Income">
-      <div className="my-5 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="space-y-6">
+        <header className="page-heading">
+          <p className="page-eyebrow">A closer look at your earnings</p>
+          <h1 className="page-title">Income</h1>
+          <p className="page-description">
+            Keep all your income sources and trends in one place.
+          </p>
+        </header>
+
         <div className="grid grid-cols-1 gap-6">
           <div className="">
             {loading ? (
               <SkeletonCard type="chart" />
             ) : (
-              <IncomeOverview
-                transactions={incomeData}
-                onAddIncome={() => setOpenAddIncomeModal(true)}
-              />
+              <IncomeOverview transactions={incomeData} />
             )}
           </div>
         </div>
 
-        <div className="mt-6">
+        <div>
           {loading ? (
             <SkeletonCard type="transaction" count={4} />
           ) : (
@@ -94,6 +100,15 @@ const Income = () => {
             />
           )}
         </div>
+
+        <FloatingActionButton
+          actions={[
+            {
+              label: 'Add income',
+              onClick: () => setOpenAddIncomeModal(true),
+            },
+          ]}
+        />
 
         <Modal
           isOpen={openAddIncomeModal}

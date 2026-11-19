@@ -2,7 +2,7 @@ import React from 'react'
 import CustomPieChart from '../Charts/CustomPieChart'
 import Card from '../common/Card'
 
-const COLORS = ['#00c951', '#fb2c36']
+const COLORS = ['var(--accent-chart-light)', 'var(--accent-chart-dark)']
 
 const FinanceOverview = ({ totalBalance, totalIncome, totalExpense }) => {
   const balanceData = [
@@ -12,8 +12,11 @@ const FinanceOverview = ({ totalBalance, totalIncome, totalExpense }) => {
 
   return (
     <Card className="card">
-      <div className="flex items-center justify-between">
-        <h5 className="text-lg">Financial Overview</h5>
+      <div className="mb-1">
+        <h5>Financial overview</h5>
+        <p className="mt-1 text-sm text-gray-500">
+          Your income and spending, side by side.
+        </p>
       </div>
 
       <CustomPieChart

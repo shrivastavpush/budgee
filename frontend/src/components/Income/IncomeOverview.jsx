@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react'
-import { LuPlus } from '../../utils/icons'
 import CustomBarChart from '../Charts/CustomBarChart'
 import { prepareIncomeBarCharData } from '../../utils/helper'
 import Card from '../common/Card'
 
-const IncomeOverview = ({ transactions, onAddIncome }) => {
+const IncomeOverview = ({ transactions }) => {
   const chartData = useMemo(
     () => prepareIncomeBarCharData(transactions),
     [transactions]
@@ -12,21 +11,21 @@ const IncomeOverview = ({ transactions, onAddIncome }) => {
 
   return (
     <Card className="card">
-      <div className="flex justify-between items-center">
-        <div className="">
-          <h5 className="text-lg">Income Overview</h5>
+      <div className="flex items-center justify-between">
+        <div>
+          <h5>Income overview</h5>
           <p className="text-sm text-gray-400 mt-0.5">
             Track your earnings over time and analyze your income trends
           </p>
         </div>
-
-        <button onClick={onAddIncome} className="add-btn">
-          <LuPlus className="text-lg" /> Add Income
-        </button>
       </div>
 
-      <div className="mt-10">
-        <CustomBarChart data={chartData} color1="#00c951" color2="#4ADE80" />
+      <div className="mt-5">
+        <CustomBarChart
+          data={chartData}
+          color1="var(--accent-chart-light)"
+          color2="var(--accent-chart-dark)"
+        />
       </div>
     </Card>
   )

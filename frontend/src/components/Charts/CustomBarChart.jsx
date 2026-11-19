@@ -56,10 +56,13 @@ const CustomBarChart = ({ data = [], color1, color2 }) => {
 
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 12, fill: '#555' }}
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
             stroke="none"
           />
-          <YAxis tick={{ fontSize: 12, fill: '#555' }} stroke="none" />
+          <YAxis
+            tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
+            stroke="none"
+          />
 
           <Tooltip content={CustomTooltip} />
 

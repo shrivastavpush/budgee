@@ -17,6 +17,11 @@ export {
   LuTrendingDown,
   LuTrash2,
   LuTrendingUpDown,
+  LuSun,
+  LuMoon,
+  LuMonitor,
+  LuPalette,
+  LuChevronDown,
 } from 'react-icons/lu'
 
 export { HiOutlineMenu, HiOutlineX } from 'react-icons/hi'

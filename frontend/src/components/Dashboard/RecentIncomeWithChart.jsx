@@ -15,15 +15,15 @@ const RecentIncomeWithChart = ({ data }) => {
   return (
     <Card className="card">
       <div className="flex items-center justify-between">
-        <h5 className="text-lg">Last 60 Days Income</h5>
+        <h5>Income trend</h5>
       </div>
 
       {data?.length > 0 ? (
         <div className="w-full h-[300px] mt-6">
           <CustomLineChart
             data={chartData}
-            stopColor="#00c951"
-            fillColor="#00c951"
+            stopColor="var(--accent-chart-dark)"
+            fillColor="var(--accent-chart-light)"
           />
         </div>
       ) : (
