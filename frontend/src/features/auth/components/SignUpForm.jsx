@@ -26,7 +26,7 @@ const SignUpForm = ({ onSwitch }) => {
       toast.error('Please enter your name')
       return
     }
-    if (!validateEmail(email)) {
+    if (!validateEmail(email.trim())) {
       toast.error('Please enter a valid email address')
       return
     }
@@ -39,7 +39,7 @@ const SignUpForm = ({ onSwitch }) => {
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         fullName,
-        email,
+        email: email.trim(),
         password,
       })
       const { token, user } = response.data
@@ -98,7 +98,12 @@ const SignUpForm = ({ onSwitch }) => {
             onChange={({ target }) => setEmail(target.value)}
             label="Email Address"
             placeholder="email@example.com"
-            type="email"
+            type="text"
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
           />
         </div>
         <div data-auth-item className="sm:col-span-2">

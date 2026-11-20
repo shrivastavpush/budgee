@@ -18,7 +18,7 @@ const LoginForm = ({ onSwitch }) => {
   const handleLogin = async (e) => {
     e.preventDefault()
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(email.trim())) {
       toast.error('Please enter a valid email address')
       return
     }
@@ -30,7 +30,7 @@ const LoginForm = ({ onSwitch }) => {
     setIsLoading(true)
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
-        email,
+        email: email.trim(),
         password,
       })
       const { token, user } = response.data
@@ -64,7 +64,12 @@ const LoginForm = ({ onSwitch }) => {
           onChange={({ target }) => setEmail(target.value)}
           label="Email Address"
           placeholder="email@example.com"
-          type="email"
+          type="text"
+          inputMode="email"
+          autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
         />
       </div>
       <div data-auth-item>
