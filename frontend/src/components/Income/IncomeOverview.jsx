@@ -1,13 +1,10 @@
 import React, { useMemo } from 'react'
 import CustomBarChart from '../Charts/CustomBarChart'
-import { prepareIncomeBarCharData } from '../../utils/helper'
+import { prepareOverviewData } from '../../utils/helper'
 import Card from '../common/Card'
 
-const IncomeOverview = ({ transactions }) => {
-  const chartData = useMemo(
-    () => prepareIncomeBarCharData(transactions),
-    [transactions]
-  )
+const IncomeOverview = ({ data }) => {
+  const chartData = useMemo(() => prepareOverviewData(data), [data])
 
   return (
     <Card className="card">

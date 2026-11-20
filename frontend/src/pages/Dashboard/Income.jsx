@@ -24,6 +24,8 @@ const Income = () => {
     deleteIncome,
     downloadIncomeReport,
     pagination,
+    overview,
+    fetchIncomeOverview,
   } = useIncome()
 
   const [openAddIncomeModal, setOpenAddIncomeModal] = useState(false)
@@ -38,21 +40,32 @@ const Income = () => {
 
   useEffect(() => {
     fetchIncomeDetails()
-  }, [fetchIncomeDetails])
+    fetchIncomeOverview()
+  }, [fetchIncomeDetails, fetchIncomeOverview])
 
   const handleAddIncome = async (income) => {
     const success = await addIncome(income)
-    if (success) setOpenAddIncomeModal(false)
+    if (success) {
+      setOpenAddIncomeModal(false)
+      fetchIncomeDetails(1) // new items sort first
+      fetchIncomeOverview()
+    }
   }
 
   const handleEditIncome = async (income) => {
     const success = await editIncome(openEditIncomeModal.data._id, income)
-    if (success) setOpenEditIncomeModal({ show: false, data: null })
+    if (success) {
+      setOpenEditIncomeModal({ show: false, data: null })
+      fetchIncomeOverview()
+    }
   }
 
   const handleDeleteIncome = async () => {
     const success = await deleteIncome(openDeleteAlert.data)
-    if (success) setOpenDeleteAlert({ show: false, data: null })
+    if (success) {
+      setOpenDeleteAlert({ show: false, data: null })
+      fetchIncomeOverview()
+    }
   }
 
   return (
@@ -68,16 +81,16 @@ const Income = () => {
 
         <div className="grid grid-cols-1 gap-6">
           <div className="">
-            {loading ? (
+            {loading && incomeData.length === 0 ? (
               <SkeletonCard type="chart" />
             ) : (
-              <IncomeOverview transactions={incomeData} />
+              <IncomeOverview data={overview} />
             )}
           </div>
         </div>
 
         <div>
-          {loading ? (
+          {loading && incomeData.length === 0 ? (
             <SkeletonCard type="transaction" count={4} />
           ) : (
             <IncomeList

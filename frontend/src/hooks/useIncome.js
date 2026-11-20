@@ -5,18 +5,23 @@ import { downloadFile } from '../utils/downloadUtils'
 import toast from 'react-hot-toast'
 
 const PAGE_SIZE = 20
+const OVERVIEW_DAYS = 60
 
 export const useIncome = () => {
   const [incomeData, setIncomeData] = useState([])
   const [loading, setLoading] = useState(false)
   const [pagination, setPagination] = useState(null)
   const pageRef = useRef(1)
+  const listReqRef = useRef(0) // ignore out-of-order list responses
+  const overviewReqRef = useRef(0)
+  const [overview, setOverview] = useState([])
 
   const fetchIncomeDetails = useCallback(async (requestedPage) => {
     const nextPage =
       Number.isInteger(requestedPage) && requestedPage > 0
         ? requestedPage
         : pageRef.current || 1
+    const reqId = ++listReqRef.current
     setLoading(true)
     try {
       let response = await axiosInstance.get(API_PATHS.INCOME.GET_ALL_INCOME, {
@@ -33,15 +38,35 @@ export const useIncome = () => {
           })
           data = response.data?.data || []
         }
+        if (reqId !== listReqRef.current) return
         setIncomeData(data)
         setPagination(response.data.pagination)
         pageRef.current = response.data.pagination?.page || currentPage
       }
     } catch (error) {
+      if (reqId !== listReqRef.current) return
       console.error('Something went wrong. Please try again.', error)
       toast.error('Failed to fetch income details')
     } finally {
-      setLoading(false)
+      if (reqId === listReqRef.current) setLoading(false)
+    }
+  }, [])
+
+  // Daily totals across the whole window (not just the visible page).
+  const fetchIncomeOverview = useCallback(async () => {
+    const reqId = ++overviewReqRef.current
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.INCOME.INCOME_OVERVIEW,
+        {
+          params: { days: OVERVIEW_DAYS },
+        }
+      )
+      if (reqId === overviewReqRef.current) setOverview(response.data || [])
+    } catch (error) {
+      if (reqId !== overviewReqRef.current) return
+      console.error('Failed to fetch income overview', error)
+      toast.error('Failed to load income overview')
     }
   }, [])
 
@@ -49,10 +74,18 @@ export const useIncome = () => {
     const { source, amount, date, icon } = income
 
     // Basic validation
-    if (!source.trim()) return toast.error('Source is required')
-    if (!amount || isNaN(amount) || Number(amount) <= 0)
-      return toast.error('Amount should be a valid number greater than 0')
-    if (!date) return toast.error('Date is required')
+    if (!source.trim()) {
+      toast.error('Source is required')
+      return false
+    }
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      toast.error('Amount should be a valid number greater than 0')
+      return false
+    }
+    if (!date) {
+      toast.error('Date is required')
+      return false
+    }
 
     try {
       const response = await axiosInstance.post(API_PATHS.INCOME.ADD_INCOME, {
@@ -63,7 +96,6 @@ export const useIncome = () => {
       })
       if (response.data) {
         toast.success('Income added successfully')
-        fetchIncomeDetails(1)
         return true
       }
     } catch (error) {
@@ -76,10 +108,18 @@ export const useIncome = () => {
   const editIncome = async (id, income) => {
     const { source, amount, date, icon } = income
 
-    if (!source.trim()) return toast.error('Source is required')
-    if (!amount || isNaN(amount) || Number(amount) <= 0)
-      return toast.error('Amount should be a valid number greater than 0')
-    if (!date) return toast.error('Date is required')
+    if (!source.trim()) {
+      toast.error('Source is required')
+      return false
+    }
+    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+      toast.error('Amount should be a valid number greater than 0')
+      return false
+    }
+    if (!date) {
+      toast.error('Date is required')
+      return false
+    }
 
     try {
       const response = await axiosInstance.patch(
@@ -126,6 +166,8 @@ export const useIncome = () => {
     incomeData,
     loading,
     pagination,
+    overview,
+    fetchIncomeOverview,
     fetchIncomeDetails,
     addIncome,
     editIncome,

@@ -13,3 +13,4 @@ exports.getAllIncome = h.getAll
 exports.deleteIncome = h.remove
 exports.updateIncome = h.update
 exports.downloadIncomeExcel = h.downloadExcel
+exports.getIncomeOverview = h.overview

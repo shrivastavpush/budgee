@@ -182,5 +182,43 @@ module.exports = ({ Model, field, label, entity }) => {
     }
   }
 
-  return { add, getAll, remove, update, downloadExcel }
+  // Daily totals for the overview chart (covers all data in the window, not one page).
+  // Days are bucketed in IST since the app is INR-only.
+  const overview = async (req, res, next) => {
+    try {
+      const days = Math.min(
+        Math.max(parseInt(req.query.days, 10) || 30, 1),
+        365
+      )
+      const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+      const rows = await Model.aggregate([
+        {
+          $match: {
+            userId: new mongoose.Types.ObjectId(req.user.id),
+            date: { $gte: since },
+          },
+        },
+        {
+          $group: {
+            _id: {
+              $dateToString: {
+                format: '%Y-%m-%d',
+                date: '$date',
+                timezone: 'Asia/Kolkata',
+              },
+            },
+            amountCents: { $sum: '$amountCents' },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ])
+      res.json(
+        rows.map((r) => ({ date: r._id, amount: fromCents(r.amountCents) }))
+      )
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  return { add, getAll, remove, update, downloadExcel, overview }
 }

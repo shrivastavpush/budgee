@@ -106,3 +106,16 @@ export const prepareIncomeBarCharData = (data = []) =>
 
 export const prepareExpenseLineChartData = (data = []) =>
   prepareChartData(data, 'category')
+
+// Daily totals from the overview endpoint: [{ date: 'YYYY-MM-DD', amount }].
+// Parsed as a local date so the label never shifts across timezones.
+export const prepareOverviewData = (rows = []) =>
+  rows.map(({ date, amount }) => {
+    const [y, m, d] = date.split('-').map(Number)
+    return {
+      month: formatTransactionDate(new Date(y, m - 1, d), 'chart'),
+      category: 'Daily total',
+      source: 'Daily total',
+      amount,
+    }
+  })

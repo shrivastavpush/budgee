@@ -24,6 +24,8 @@ const Expense = () => {
     deleteExpense,
     downloadExpenseReport,
     pagination,
+    overview,
+    fetchExpenseOverview,
   } = useExpense()
 
   const [openAddExpenseModal, setOpenAddExpenseModal] = useState(false)
@@ -38,21 +40,32 @@ const Expense = () => {
 
   useEffect(() => {
     fetchExpenseDetails()
-  }, [fetchExpenseDetails])
+    fetchExpenseOverview()
+  }, [fetchExpenseDetails, fetchExpenseOverview])
 
   const handleAddExpense = async (expense) => {
     const success = await addExpense(expense)
-    if (success) setOpenAddExpenseModal(false)
+    if (success) {
+      setOpenAddExpenseModal(false)
+      fetchExpenseDetails(1) // new items sort first
+      fetchExpenseOverview()
+    }
   }
 
   const handleEditExpense = async (expense) => {
     const success = await editExpense(openEditExpenseModal.data._id, expense)
-    if (success) setOpenEditExpenseModal({ show: false, data: null })
+    if (success) {
+      setOpenEditExpenseModal({ show: false, data: null })
+      fetchExpenseOverview()
+    }
   }
 
   const handleDeleteExpense = async () => {
     const success = await deleteExpense(openDeleteAlert.data)
-    if (success) setOpenDeleteAlert({ show: false, data: null })
+    if (success) {
+      setOpenDeleteAlert({ show: false, data: null })
+      fetchExpenseOverview()
+    }
   }
 
   return (
@@ -68,16 +81,16 @@ const Expense = () => {
 
         <div className="grid grid-cols-1 gap-6">
           <div className="">
-            {loading ? (
+            {loading && expenseData.length === 0 ? (
               <SkeletonCard type="chart" />
             ) : (
-              <ExpenseOverview transactions={expenseData} />
+              <ExpenseOverview data={overview} />
             )}
           </div>
         </div>
 
         <div>
-          {loading ? (
+          {loading && expenseData.length === 0 ? (
             <SkeletonCard type="transaction" count={4} />
           ) : (
             <ExpenseList

@@ -5,7 +5,7 @@ import toast from 'react-hot-toast'
 
 export const useDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true)

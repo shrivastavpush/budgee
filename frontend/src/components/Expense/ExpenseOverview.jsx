@@ -1,13 +1,10 @@
 import React, { useMemo } from 'react'
 import CustomLineChart from '../Charts/CustomLineChart'
-import { prepareExpenseLineChartData } from '../../utils/helper'
+import { prepareOverviewData } from '../../utils/helper'
 import Card from '../common/Card'
 
-const ExpenseOverview = ({ transactions }) => {
-  const chartData = useMemo(
-    () => prepareExpenseLineChartData(transactions),
-    [transactions]
-  )
+const ExpenseOverview = ({ data }) => {
+  const chartData = useMemo(() => prepareOverviewData(data), [data])
 
   return (
     <Card className="card">

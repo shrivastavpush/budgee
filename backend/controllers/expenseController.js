@@ -13,3 +13,4 @@ exports.getAllExpense = h.getAll
 exports.deleteExpense = h.remove
 exports.updateExpense = h.update
 exports.downloadExpenseExcel = h.downloadExcel
+exports.getExpenseOverview = h.overview
