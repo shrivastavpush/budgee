@@ -651,18 +651,6 @@ const Landing = () => {
                 </p>
               </div>
             ))}
-            <div
-              data-item
-              className="flex flex-col justify-between rounded-3xl bg-[var(--accent)] p-7 text-white"
-            >
-              <LuShieldCheck className="text-3xl" />
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold">Secure by design</h3>
-                <p className="mt-2 text-sm leading-6 text-white/80">
-                  Short-lived tokens and hardened APIs protect your account.
-                </p>
-              </div>
-            </div>
           </div>
         </section>
 
