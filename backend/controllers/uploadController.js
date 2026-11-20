@@ -39,10 +39,7 @@ exports.uploadImage = async (req, res) => {
       folder: '/budgee/avatars',
     })
 
-    await User.updateOne(
-      { _id: req.user.id },
-      { profileImageUrl: result.url }
-    )
+    await User.updateOne({ _id: req.user.id }, { profileImageUrl: result.url })
 
     res.status(200).json({ imageUrl: result.url })
   } catch (error) {

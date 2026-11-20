@@ -1,9 +1,15 @@
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
 const { toPublicUser } = require('../utils/userResponse')
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MIN_PASSWORD_LENGTH = 8
+const MAX_PASSWORD_LENGTH = 72 // bcrypt ignores bytes past 72
+const MAX_EMAIL_LENGTH = 254
+const MAX_NAME_LENGTH = 100
+// Used to equalise timing when the email doesn't exist (prevents user enumeration).
+const DUMMY_HASH = bcrypt.hashSync('timing-equaliser', 10)
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '10h' })
@@ -18,13 +24,30 @@ exports.registerUser = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
-  if (typeof email !== 'string' || !EMAIL_REGEX.test(email.trim())) {
+  if (
+    typeof fullName !== 'string' ||
+    fullName.trim().length > MAX_NAME_LENGTH
+  ) {
+    return res.status(400).json({ message: 'Invalid name' })
+  }
+
+  if (
+    typeof email !== 'string' ||
+    email.length > MAX_EMAIL_LENGTH ||
+    !EMAIL_REGEX.test(email.trim())
+  ) {
     return res.status(400).json({ message: 'Invalid email format' })
   }
 
   if (typeof password !== 'string' || password.length < MIN_PASSWORD_LENGTH) {
     return res.status(400).json({
       message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters`,
+    })
+  }
+
+  if (password.length > MAX_PASSWORD_LENGTH) {
+    return res.status(400).json({
+      message: `Password must be at most ${MAX_PASSWORD_LENGTH} characters`,
     })
   }
 
@@ -62,14 +85,15 @@ exports.loginUser = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' })
   }
 
-  if (typeof email !== 'string') {
+  if (typeof email !== 'string' || typeof password !== 'string') {
     return res.status(400).json({ message: 'Invalid email format' })
   }
 
   try {
     // Emails are stored lowercase, so a plain lookup uses the unique index.
     const user = await User.findOne({ email: normalizeEmail(email) })
-    if (!user || !(await user.comparePassword(password))) {
+    const valid = await bcrypt.compare(password, user?.password ?? DUMMY_HASH)
+    if (!user || !valid) {
       return res.status(400).json({ message: 'Invalid credentials' })
     }
 

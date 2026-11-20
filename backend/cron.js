@@ -1,4 +1,5 @@
 const https = require('https')
+const http = require('http')
 
 const setupCron = () => {
   const backendUrl = process.env.RENDER_EXTERNAL_URL
@@ -14,8 +15,10 @@ const setupCron = () => {
 
   const timer = setInterval(
     () => {
-      https
+      const client = backendUrl.startsWith('http://') ? http : https
+      client
         .get(backendUrl, (res) => {
+          res.resume() // drain body so the socket is released
           if (res.statusCode === 200) {
             console.log('Keep-alive ping successful')
           } else {

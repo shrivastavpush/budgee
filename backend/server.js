@@ -19,8 +19,8 @@ const hpp = require('hpp')
 
 const PORT = process.env.PORT || 5000
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET is not set')
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  throw new Error('JWT_SECRET must be set and at least 32 characters')
 }
 
 const app = express()
@@ -36,8 +36,8 @@ if (process.env.NODE_ENV === 'development') {
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'http://localhost:5173',
   'https://budgee-rho.vercel.app',
+  ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:5173']),
 ].filter(Boolean)
 
 app.use(
@@ -55,8 +55,6 @@ app.use(
     credentials: true,
   })
 )
-
-app.options(/(.*)/, cors())
 
 app.disable('x-powered-by')
 app.use(express.json({ limit: '10kb' }))
@@ -103,6 +101,15 @@ app.use((err, req, res, _next) => {
   })
 })
 
+// Fail fast and let the process manager restart on unexpected errors.
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled rejection:', reason)
+})
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err)
+  process.exit(1)
+})
+
 const start = async () => {
   try {
     await connectDB()
@@ -112,6 +119,7 @@ const start = async () => {
     })
     server.keepAliveTimeout = 65 * 1000 // above typical LB idle timeout (60s)
     server.headersTimeout = 66 * 1000
+    server.requestTimeout = 30 * 1000 // drop slow/stalled requests
 
     const shutdown = (signal) => {
       console.log(`${signal} received, shutting down`)
