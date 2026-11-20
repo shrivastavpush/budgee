@@ -30,7 +30,7 @@ const SignUp = () => {
       return
     }
 
-    if (!validateEmail(email)) {
+    if (!validateEmail(email.trim())) {
       toast.error('Please enter a valid email address')
       return
     }
@@ -46,7 +46,7 @@ const SignUp = () => {
     try {
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         fullName,
-        email,
+        email: email.trim(),
         password,
       })
 
@@ -109,7 +109,7 @@ const SignUp = () => {
               }}
               label="Email Address"
               placeholder="email@example.com"
-              type="email"
+              type="text"
             />
 
             <div className="col-span-2">
