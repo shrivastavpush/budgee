@@ -80,11 +80,11 @@ const SignUp = () => {
 
   return (
     <AuthLayout>
-      <div className="auth-form-card flex flex-col justify-center">
-        <h3 className="text-xl font-bold tracking-tight text-gray-900">
+      <div className="flex flex-col justify-center">
+        <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
           Create your account
         </h3>
-        <p className="mt-1 mb-5 text-sm text-slate-700">
+        <p className="mt-1 mb-5 text-sm text-[var(--text-secondary)]">
           Get a clearer view of your money, starting today.
         </p>
 
@@ -99,7 +99,7 @@ const SignUp = () => {
               }}
               label="Full Name"
               placeholder="Enter your name"
-              type="email"
+              type="text"
             />
 
             <Input
@@ -109,7 +109,7 @@ const SignUp = () => {
               }}
               label="Email Address"
               placeholder="email@example.com"
-              type="text"
+              type="email"
             />
 
             <div className="col-span-2">
@@ -126,13 +126,13 @@ const SignUp = () => {
           </div>
 
           <Button type="submit" isLoading={isLoading}>
-            SIGN UP
+            Sign up
           </Button>
 
-          <p className="mt-4 text-center text-[13px] text-slate-800">
+          <p className="mt-4 text-center text-[13px] text-[var(--text-secondary)]">
             Already have an account?{' '}
             <Link
-              className="font-semibold text-teal-600 hover:underline"
+              className="font-semibold text-[var(--accent)] hover:underline"
               to="/login"
             >
               Sign in

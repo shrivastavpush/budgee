@@ -10,13 +10,13 @@ const Input = ({ value, label, onChange, placeholder, type, step, min }) => {
 
   return (
     <div className="flex flex-col">
-      <label className="mb-1 text-[13px] font-semibold text-slate-800">
+      <label className="mb-1 text-[13px] font-semibold text-[var(--text-secondary)]">
         {label}
       </label>
 
       <div className="input-box">
         <input
-          className="w-full bg-transparent text-gray-900 outline-none"
+          className="w-full bg-transparent text-[var(--text-primary)] outline-none"
           value={value}
           onChange={(e) => onChange(e)}
           placeholder={placeholder}
@@ -32,7 +32,7 @@ const Input = ({ value, label, onChange, placeholder, type, step, min }) => {
             {showPassword ? (
               <FaRegEye
                 size={22}
-                className="cursor-pointer text-teal-600"
+                className="cursor-pointer text-[var(--accent)]"
                 role="button"
                 aria-label="Show password"
                 tabIndex={0}
@@ -47,7 +47,7 @@ const Input = ({ value, label, onChange, placeholder, type, step, min }) => {
             ) : (
               <FaRegEyeSlash
                 size={22}
-                className="cursor-pointer text-slate-400"
+                className="cursor-pointer text-[var(--text-subtle)]"
                 role="button"
                 aria-label="Hide password"
                 tabIndex={0}

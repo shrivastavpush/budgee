@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const mongoose = require('mongoose')
 const { allowedOrigins } = require('../config/origins')
 
 // Stateless JWT verification: no DB hit per request. Access tokens last 15m;
@@ -14,10 +15,16 @@ exports.protect = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET, {
       algorithms: ['HS256'],
     })
-    if (!decoded?.id || decoded.typ === 'refresh') {
+    const id = decoded?.id
+    // Reject operator objects in JWT claims (NoSQL injection via userId).
+    if (
+      typeof id !== 'string' ||
+      !mongoose.isValidObjectId(id) ||
+      decoded.typ === 'refresh'
+    ) {
       return res.status(401).json({ message: 'Not authorized, token failed' })
     }
-    req.user = { id: decoded.id, _id: decoded.id }
+    req.user = { id, _id: id }
     next()
   } catch {
     return res.status(401).json({ message: 'Not authorized, token failed' })

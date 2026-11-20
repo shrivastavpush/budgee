@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import GithubStarButton from './components/GithubStarButton'
 import { ThemeProvider } from './context/ThemeProvider'
 
+const Landing = lazy(() => import('./pages/Landing'))
 const Login = lazy(() => import('./pages/Auth/Login'))
 const SignUp = lazy(() => import('./pages/Auth/SignUp'))
 const Home = lazy(() => import('./pages/Dashboard/Home'))
@@ -18,10 +19,6 @@ const Income = lazy(() => import('./pages/Dashboard/Income'))
 const Expense = lazy(() => import('./pages/Dashboard/Expense'))
 
 const hasToken = () => Boolean(localStorage.getItem('token'))
-
-const Root = () => {
-  return <Navigate to={hasToken() ? '/dashboard' : '/login'} replace />
-}
 
 const PrivateRoute = ({ children }) => {
   return hasToken() ? children : <Navigate to="/login" replace />
@@ -55,7 +52,14 @@ const App = () => {
         <Router>
           <Suspense fallback={<PageFallback />}>
             <Routes>
-              <Route path="/" element={<Root />} />
+              <Route
+                path="/"
+                element={
+                  <PublicRoute>
+                    <Landing />
+                  </PublicRoute>
+                }
+              />
               <Route
                 path="/login"
                 element={

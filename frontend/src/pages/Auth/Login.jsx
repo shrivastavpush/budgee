@@ -59,11 +59,11 @@ const Login = () => {
 
   return (
     <AuthLayout>
-      <div className="auth-form-card flex flex-col justify-center">
-        <h3 className="text-xl font-bold tracking-tight text-gray-900">
+      <div className="flex flex-col justify-center">
+        <h3 className="text-xl font-bold tracking-tight text-[var(--text-primary)]">
           Welcome back
         </h3>
-        <p className="mt-1 mb-6 text-sm text-slate-700">
+        <p className="mt-1 mb-6 text-sm text-[var(--text-secondary)]">
           Sign in to pick up where you left off.
         </p>
 
@@ -88,10 +88,10 @@ const Login = () => {
             Sign in
           </Button>
 
-          <p className="mt-4 text-center text-[13px] text-slate-800">
+          <p className="mt-4 text-center text-[13px] text-[var(--text-secondary)]">
             New to Budgee?{' '}
             <Link
-              className="font-semibold text-teal-600 hover:underline"
+              className="font-semibold text-[var(--accent)] hover:underline"
               to="/signup"
             >
               Create an account

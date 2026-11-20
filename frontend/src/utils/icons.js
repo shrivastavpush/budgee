@@ -22,6 +22,9 @@ export {
   LuMonitor,
   LuPalette,
   LuChevronDown,
+  LuChartPie,
+  LuShieldCheck,
+  LuCalendarDays,
 } from 'react-icons/lu'
 
 export { HiOutlineMenu, HiOutlineX } from 'react-icons/hi'

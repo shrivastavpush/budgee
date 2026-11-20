@@ -1,5 +1,6 @@
 const xlsx = require('xlsx')
 const mongoose = require('mongoose')
+const { sanitize } = require('../middleware/sanitize')
 const {
   parseTransactionDate,
   parsePageLimit,
@@ -18,6 +19,13 @@ const MAX_ICON_LENGTH = 200
 // Prevent spreadsheet formula injection in exported cells.
 const safeCell = (v) =>
   typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? `'${v}` : v
+
+/** Sanitize then coerce to ObjectId so query filters never carry operator objects. */
+const toObjectId = (value) => {
+  const id = sanitize(value)
+  if (typeof id !== 'string' || !mongoose.isValidObjectId(id)) return null
+  return new mongoose.Types.ObjectId(id)
+}
 
 /**
  * Builds CRUD + export handlers for a transaction model.
@@ -46,17 +54,23 @@ module.exports = ({ Model, field, label, entity }) => {
       message: `${label}, a positive amount, and a valid date are required`,
     })
 
-  const validId = (req, res) => {
-    if (mongoose.Types.ObjectId.isValid(req.params.id)) return true
-    res.status(404).json({ message: `${entity} not found` })
-    return false
+  const resolveIds = (req, res) => {
+    const userId = toObjectId(req.user?.id)
+    const _id = toObjectId(req.params?.id)
+    if (!userId || !_id) {
+      res.status(404).json({ message: `${entity} not found` })
+      return null
+    }
+    return { userId, _id }
   }
 
   const add = async (req, res, next) => {
     try {
       const data = parseBody(req.body)
       if (!data) return invalid(res)
-      const doc = await Model.create({ userId: req.user.id, ...data })
+      const userId = toObjectId(req.user?.id)
+      if (!userId) return res.status(401).json({ message: 'Unauthorized' })
+      const doc = await Model.create({ userId, ...data })
       res.status(201).json(doc)
     } catch (e) {
       next(e)
@@ -65,8 +79,10 @@ module.exports = ({ Model, field, label, entity }) => {
 
   const getAll = async (req, res, next) => {
     try {
-      const { page, limit, skip } = parsePageLimit(req.query)
-      const filter = { userId: req.user.id }
+      const userId = toObjectId(req.user?.id)
+      if (!userId) return res.status(401).json({ message: 'Unauthorized' })
+      const { page, limit, skip } = parsePageLimit(sanitize(req.query) || {})
+      const filter = { userId }
       const [data, total] = await Promise.all([
         Model.find(filter)
           .sort({ date: -1, _id: -1 })
@@ -90,12 +106,10 @@ module.exports = ({ Model, field, label, entity }) => {
   }
 
   const remove = async (req, res, next) => {
-    if (!validId(req, res)) return
+    const ids = resolveIds(req, res)
+    if (!ids) return
     try {
-      const deleted = await Model.findOneAndDelete({
-        _id: req.params.id,
-        userId: req.user.id,
-      }).lean()
+      const deleted = await Model.findOneAndDelete(ids).lean()
       if (!deleted)
         return res.status(404).json({ message: `${entity} not found` })
       res.json({ message: `${entity} deleted successfully` })
@@ -105,15 +119,12 @@ module.exports = ({ Model, field, label, entity }) => {
   }
 
   const update = async (req, res, next) => {
-    if (!validId(req, res)) return
+    const ids = resolveIds(req, res)
+    if (!ids) return
     try {
       const data = parseBody(req.body)
       if (!data) return invalid(res)
-      const doc = await Model.findOneAndUpdate(
-        { _id: req.params.id, userId: req.user.id },
-        data,
-        { new: true }
-      ).lean()
+      const doc = await Model.findOneAndUpdate(ids, data, { new: true }).lean()
       if (!doc) return res.status(404).json({ message: `${entity} not found` })
       res.json(serializeTransaction(doc))
     } catch (e) {
@@ -141,11 +152,13 @@ module.exports = ({ Model, field, label, entity }) => {
 
   const downloadExcel = async (req, res, next) => {
     try {
-      const range = parseRange(req.query)
+      const userId = toObjectId(req.user?.id)
+      if (!userId) return res.status(401).json({ message: 'Unauthorized' })
+      const range = parseRange(sanitize(req.query) || {})
       if (!range) {
         return res.status(400).json({ message: 'Invalid date range' })
       }
-      const filter = { userId: req.user.id }
+      const filter = { userId }
       if (Object.keys(range).length) filter.date = range
 
       const items = await Model.find(filter)
@@ -186,15 +199,17 @@ module.exports = ({ Model, field, label, entity }) => {
   // Days are bucketed in IST since the app is INR-only.
   const overview = async (req, res, next) => {
     try {
+      const userId = toObjectId(req.user?.id)
+      if (!userId) return res.status(401).json({ message: 'Unauthorized' })
       const days = Math.min(
-        Math.max(parseInt(req.query.days, 10) || 30, 1),
+        Math.max(parseInt(sanitize(req.query)?.days, 10) || 30, 1),
         365
       )
       const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
       const rows = await Model.aggregate([
         {
           $match: {
-            userId: new mongoose.Types.ObjectId(req.user.id),
+            userId,
             date: { $gte: since },
           },
         },
