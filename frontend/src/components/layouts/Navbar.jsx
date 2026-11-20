@@ -6,6 +6,8 @@ import { UserContext } from '../../context/UserContextValue'
 import CharAvatar from '../Cards/CharAvatar'
 import Logo from '../../assets/Budgee.png'
 import ThemeControls from '../ThemeControls'
+import axiosInstance from '../../utils/axiosInstance'
+import { API_PATHS } from '../../utils/apiPaths'
 
 const Navbar = () => {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false)
@@ -28,6 +30,8 @@ const Navbar = () => {
   }, [profileMenuOpen])
 
   const handleLogout = () => {
+    // Clear the httpOnly refresh cookie server-side; fire-and-forget.
+    axiosInstance.post(API_PATHS.AUTH.LOGOUT).catch(() => {})
     localStorage.removeItem('token')
     clearUser()
     setProfileMenuOpen(false)

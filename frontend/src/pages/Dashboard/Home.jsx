@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import InfoCard from '../../components/Cards/InfoCard'
 import SkeletonCard from '../../components/Cards/SkeletonCard'
-import { addThousandSeparator } from '../../utils/helper'
+import { formatINR } from '../../utils/helper'
 import { LuHandCoins, LuWalletMinimal, IoMdCard } from '../../utils/icons'
 
 import RecentTransactions from '../../components/Dashboard/RecentTransactions'
@@ -76,19 +76,19 @@ const Home = () => {
               <InfoCard
                 icon={<IoMdCard />}
                 label="Total Balance"
-                value={addThousandSeparator(dashboardData?.totalBalance || 0)}
+                value={formatINR(dashboardData?.totalBalance || 0)}
                 color="bg-violet-500"
               />
               <InfoCard
                 icon={<LuWalletMinimal />}
                 label="Total Income"
-                value={addThousandSeparator(dashboardData?.totalIncome || 0)}
+                value={formatINR(dashboardData?.totalIncome || 0)}
                 color="bg-green-500"
               />
               <InfoCard
                 icon={<LuHandCoins />}
                 label="Total Expense"
-                value={addThousandSeparator(dashboardData?.totalExpense || 0)}
+                value={formatINR(dashboardData?.totalExpense || 0)}
                 color="bg-red-500"
               />
             </>

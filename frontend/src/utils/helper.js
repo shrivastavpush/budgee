@@ -29,23 +29,31 @@ export const getInitials = (name) => {
     .toLocaleUpperCase()
 }
 
-export const addThousandSeparator = (num) => {
-  if (num == null || isNaN(num)) return ''
+// INR formatting: lakh/crore grouping (en-IN), always 2 decimals, e.g. ₹12,34,567.50
+const inrFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
 
-  const [integerPart, fractionalPart] = num.toString().split('.')
+export const formatINR = (amount) => {
+  const value = Number(amount)
+  if (amount == null || amount === '' || !Number.isFinite(value)) return ''
+  return inrFormatter.format(value)
+}
 
-  let lastThree = integerPart.slice(-3)
-  let rest = integerPart.slice(0, -3)
-
-  if (rest) {
-    rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',')
-  }
-
-  const formattedInteger = rest ? `${rest},${lastThree}` : lastThree
-
-  return fractionalPart
-    ? `${formattedInteger}.${fractionalPart}`
-    : formattedInteger
+// Compact axis labels in the Indian system: 1.5K, 2.3L (lakh), 1.2Cr (crore).
+export const formatINRCompact = (amount) => {
+  const value = Number(amount)
+  if (!Number.isFinite(value)) return ''
+  const abs = Math.abs(value)
+  const sign = value < 0 ? '-' : ''
+  const trim = (n) => String(Number(n.toFixed(1)))
+  if (abs >= 1e7) return `${sign}₹${trim(abs / 1e7)}Cr`
+  if (abs >= 1e5) return `${sign}₹${trim(abs / 1e5)}L`
+  if (abs >= 1e3) return `${sign}₹${trim(abs / 1e3)}K`
+  return `${sign}₹${trim(abs)}`
 }
 
 const ordinalDay = (day) => {

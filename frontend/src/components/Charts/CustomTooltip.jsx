@@ -1,5 +1,5 @@
 import React from 'react'
-import { addThousandSeparator } from '../../utils/helper'
+import { formatINR } from '../../utils/helper'
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -11,7 +11,7 @@ const CustomTooltip = ({ active, payload }) => {
         <p className="text-sm text-gray-600">
           Amount:{' '}
           <span className="text-sm font-medium text-gray-900">
-            ₹{addThousandSeparator(payload[0].value)}
+            {formatINR(payload[0].value)}
           </span>
         </p>
       </div>

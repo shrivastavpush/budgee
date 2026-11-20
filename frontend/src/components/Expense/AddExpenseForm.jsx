@@ -47,9 +47,11 @@ const AddExpenseForm = ({ onAddExpense, initialData }) => {
       <Input
         value={expense.amount}
         onChange={({ target }) => handleChange('amount', target.value)}
-        label="Expense Amount"
+        label="Expense Amount (₹)"
         placeholder="Enter Expense Amount"
         type="number"
+        step="0.01"
+        min="0.01"
       />
 
       <Input

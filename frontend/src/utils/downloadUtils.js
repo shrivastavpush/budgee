@@ -1,9 +1,12 @@
 import axiosInstance from './axiosInstance'
 import toast from 'react-hot-toast'
 
-export const downloadFile = async (url, filename) => {
+export const downloadFile = async (url, filename, params) => {
   try {
-    const response = await axiosInstance.get(url, { responseType: 'blob' })
+    const response = await axiosInstance.get(url, {
+      responseType: 'blob',
+      params,
+    })
 
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]))
     const link = document.createElement('a')

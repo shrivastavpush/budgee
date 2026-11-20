@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { LuDownload, LuHandCoins } from '../../utils/icons'
 import { formatTransactionDate } from '../../utils/helper'
 import TransactionInfoCard from '../Cards/TransactionInfoCard'
 import Card from '../common/Card'
+import ExportRange from '../common/ExportRange'
 
 const ExpenseList = ({
   transactions,
@@ -12,6 +13,8 @@ const ExpenseList = ({
   pagination,
   onPageChange,
 }) => {
+  const [range, setRange] = useState({ from: '', to: '' })
+
   return (
     <Card className="transaction-list-card">
       <div className="transaction-list-header">
@@ -22,12 +25,14 @@ const ExpenseList = ({
           </p>
         </div>
 
+        <ExportRange from={range.from} to={range.to} onChange={setRange} />
+
         <button
           type="button"
           className={
             transactions?.length === 0 ? 'card-btn-disabled' : 'card-btn'
           }
-          onClick={onDownload}
+          onClick={() => onDownload(range)}
           disabled={transactions?.length === 0}
         >
           <LuDownload className="text-base" /> Download

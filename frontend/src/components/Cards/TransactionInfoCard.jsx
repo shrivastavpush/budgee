@@ -6,7 +6,7 @@ import {
   LuTrash2,
   TbEdit,
 } from '../../utils/icons'
-import { addThousandSeparator } from '../../utils/helper'
+import { formatINR } from '../../utils/helper'
 
 const TransactionInfoCard = ({
   title,
@@ -64,7 +64,7 @@ const TransactionInfoCard = ({
         className={`transaction-amount ${isIncome ? 'is-income' : 'is-expense'}`}
       >
         <span>
-          {isIncome ? '+' : '-'} ₹{addThousandSeparator(amount)}
+          {isIncome ? '+' : '-'} {formatINR(amount)}
         </span>
         {isIncome ? (
           <LuTrendingUp aria-hidden="true" />

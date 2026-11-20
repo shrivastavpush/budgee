@@ -1,13 +1,5 @@
 const DEFAULT_LIMIT = 20
 const MAX_LIMIT = 100
-const MAX_AMOUNT = 1e12
-
-const parsePositiveAmount = (amount) => {
-  const value = typeof amount === 'number' ? amount : Number(amount)
-  if (!Number.isFinite(value) || value <= 0 || value > MAX_AMOUNT) return null
-  // Round to 2 decimals to avoid float noise in stored/summed money values.
-  return Math.round(value * 100) / 100
-}
 
 const parseTransactionDate = (date) => {
   // new Date(null) is the epoch and new Date(true) is 1ms: reject non string/number input.
@@ -33,7 +25,6 @@ const parsePageLimit = (query = {}) => {
 }
 
 module.exports = {
-  parsePositiveAmount,
   parseTransactionDate,
   parsePageLimit,
 }

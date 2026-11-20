@@ -47,9 +47,11 @@ const AddIncomeForm = ({ onAddIncome, initialData }) => {
       <Input
         value={income.amount}
         onChange={({ target }) => handleChange('amount', target.value)}
-        label="Income Amount"
+        label="Income Amount (₹)"
         placeholder="Enter Income Amount"
         type="number"
+        step="0.01"
+        min="0.01"
       />
 
       <Input

@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatINR, formatINRCompact } from '../../utils/helper'
 import {
   BarChart,
   Bar,
@@ -25,7 +26,7 @@ const CustomBarChart = ({ data = [], color1, color2 }) => {
           <p className="text-xs font-semibold text-gray-600 mb-1">
             Amount:{' '}
             <span className="text-sm text-gray-900 font-medium">
-              ₹{payload[0].payload.amount}
+              {formatINR(payload[0].payload.amount)}
             </span>
           </p>
         </div>
@@ -60,6 +61,7 @@ const CustomBarChart = ({ data = [], color1, color2 }) => {
             stroke="none"
           />
           <YAxis
+            tickFormatter={formatINRCompact}
             tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
             stroke="none"
           />

@@ -1,6 +1,7 @@
 const Income = require('../models/Income')
 const Expense = require('../models/Expense')
 const { Types } = require('mongoose')
+const { fromCents, CURRENCY } = require('../utils/money')
 
 const WINDOW_TRANSACTION_LIMIT = 10
 const RECENT_TRANSACTION_LIMIT = 5
@@ -8,7 +9,7 @@ const RECENT_TRANSACTION_LIMIT = 5
 const incomeFields = {
   _id: 1,
   source: 1,
-  amount: 1,
+  amount: { $divide: ['$amountCents', 100] },
   date: 1,
   icon: 1,
 }
@@ -16,7 +17,7 @@ const incomeFields = {
 const expenseFields = {
   _id: 1,
   category: 1,
-  amount: 1,
+  amount: { $divide: ['$amountCents', 100] },
   date: 1,
   icon: 1,
 }
@@ -26,10 +27,10 @@ const summary = (userId, since, fields, type) => [
   { $match: { userId } },
   {
     $facet: {
-      all: [{ $group: { _id: null, total: { $sum: '$amount' } } }],
+      all: [{ $group: { _id: null, total: { $sum: '$amountCents' } } }],
       windowTotal: [
         { $match: { date: { $gte: since } } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
+        { $group: { _id: null, total: { $sum: '$amountCents' } } },
       ],
       windowTransactions: [
         { $match: { date: { $gte: since } } },
@@ -67,8 +68,8 @@ exports.getDashboardData = async (req, res) => {
       ),
     ])
 
-    const totalIncome = income.all?.[0]?.total || 0
-    const totalExpense = expense.all?.[0]?.total || 0
+    const totalIncome = fromCents(income.all?.[0]?.total)
+    const totalExpense = fromCents(expense.all?.[0]?.total)
 
     const recentTransactions = [
       ...(income.recent || []),
@@ -78,15 +79,16 @@ exports.getDashboardData = async (req, res) => {
       .slice(0, RECENT_TRANSACTION_LIMIT)
 
     res.json({
+      currency: CURRENCY,
       totalBalance: totalIncome - totalExpense,
       totalIncome,
       totalExpense,
       last30DaysExpenses: {
-        total: expense.windowTotal?.[0]?.total || 0,
+        total: fromCents(expense.windowTotal?.[0]?.total),
         transactions: expense.windowTransactions || [],
       },
       last60DaysIncome: {
-        total: income.windowTotal?.[0]?.total || 0,
+        total: fromCents(income.windowTotal?.[0]?.total),
         transactions: income.windowTransactions || [],
       },
       recentTransactions,

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const { amountField, jsonTransform } = require('../utils/money')
 
 const ExpenseSchema = new mongoose.Schema(
   {
@@ -9,14 +10,14 @@ const ExpenseSchema = new mongoose.Schema(
     },
     icon: { type: String },
     category: { type: String, required: true }, //Category
-    amount: { type: Number, required: true },
+    amountCents: amountField, // integer cents; API exposes decimal `amount`
     date: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { transform: jsonTransform } }
 )
 
 // Index for optimizing dashboard queries
-// amount included so dashboard totals/windows are served from the index alone
-ExpenseSchema.index({ userId: 1, date: -1, amount: 1 })
+// amountCents included so dashboard totals/windows are served from the index alone
+ExpenseSchema.index({ userId: 1, date: -1, amountCents: 1 })
 
 module.exports = mongoose.model('Expense', ExpenseSchema)

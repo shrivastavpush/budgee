@@ -112,10 +112,14 @@ export const useExpense = () => {
     }
   }
 
-  const downloadExpenseReport = async () => {
+  const downloadExpenseReport = async ({ from, to } = {}) => {
+    const params = {}
+    if (from) params.from = from
+    if (to) params.to = to
     return await downloadFile(
       API_PATHS.EXPENSE.DOWNLOAD_EXPENSE_EXCEL,
-      'expense-details.xlsx'
+      'expense-details.xlsx',
+      params
     )
   }
 

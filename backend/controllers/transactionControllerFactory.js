@@ -1,10 +1,15 @@
 const xlsx = require('xlsx')
 const mongoose = require('mongoose')
 const {
-  parsePositiveAmount,
   parseTransactionDate,
   parsePageLimit,
 } = require('../utils/transactionQuery')
+const {
+  toCents,
+  fromCents,
+  serializeTransaction,
+  INR_EXCEL_FORMAT,
+} = require('../utils/money')
 
 const MAX_EXPORT_ROWS = 50000
 const MAX_LABEL_LENGTH = 100
@@ -21,19 +26,19 @@ const safeCell = (v) =>
 module.exports = ({ Model, field, label, entity }) => {
   const parseBody = (body) => {
     const name = typeof body[field] === 'string' ? body[field].trim() : ''
-    const amount = parsePositiveAmount(body.amount)
+    const amountCents = toCents(body.amount)
     const date = parseTransactionDate(body.date)
     const icon = typeof body.icon === 'string' ? body.icon : ''
     if (
       !name ||
       name.length > MAX_LABEL_LENGTH ||
       icon.length > MAX_ICON_LENGTH ||
-      amount == null ||
+      amountCents == null ||
       !date
     ) {
       return null
     }
-    return { icon, [field]: name, amount, date }
+    return { icon, [field]: name, amountCents, date }
   }
 
   const invalid = (res) =>
@@ -71,7 +76,7 @@ module.exports = ({ Model, field, label, entity }) => {
         Model.countDocuments(filter),
       ])
       res.json({
-        data,
+        data: data.map(serializeTransaction),
         pagination: {
           total,
           page,
@@ -110,26 +115,58 @@ module.exports = ({ Model, field, label, entity }) => {
         { new: true }
       ).lean()
       if (!doc) return res.status(404).json({ message: `${entity} not found` })
-      res.json(doc)
+      res.json(serializeTransaction(doc))
     } catch (e) {
       next(e)
     }
   }
 
+  // Optional ?from=YYYY-MM-DD&to=YYYY-MM-DD (both inclusive).
+  const parseRange = (query) => {
+    const range = {}
+    if (query.from !== undefined) {
+      const from = parseTransactionDate(query.from)
+      if (!from) return null
+      range.$gte = from
+    }
+    if (query.to !== undefined) {
+      const to = parseTransactionDate(query.to)
+      if (!to) return null
+      if (/^\d{4}-\d{2}-\d{2}$/.test(query.to)) to.setUTCHours(23, 59, 59, 999)
+      range.$lte = to
+    }
+    if (range.$gte && range.$lte && range.$gte > range.$lte) return null
+    return range
+  }
+
   const downloadExcel = async (req, res, next) => {
     try {
-      const items = await Model.find({ userId: req.user.id })
+      const range = parseRange(req.query)
+      if (!range) {
+        return res.status(400).json({ message: 'Invalid date range' })
+      }
+      const filter = { userId: req.user.id }
+      if (Object.keys(range).length) filter.date = range
+
+      const items = await Model.find(filter)
         .sort({ date: -1 })
         .limit(MAX_EXPORT_ROWS)
-        .select(`${field} amount date -_id`)
+        .select(`${field} amountCents date -_id`)
         .lean()
       const rows = items.map((i) => ({
         [label]: safeCell(i[field]),
-        Amount: i.amount,
+        'Amount (INR)': fromCents(i.amountCents),
         Date: i.date,
       }))
+      const ws = xlsx.utils.json_to_sheet(rows)
+      // Apply INR number format to the amount column (header row excluded).
+      for (let r = 1; r <= rows.length; r++) {
+        const cell = ws[xlsx.utils.encode_cell({ r, c: 1 })]
+        if (cell) cell.z = INR_EXCEL_FORMAT
+      }
+      ws['!cols'] = [{ wch: 24 }, { wch: 18 }, { wch: 22 }]
       const wb = xlsx.utils.book_new()
-      xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet(rows), entity)
+      xlsx.utils.book_append_sheet(wb, ws, entity)
       const buffer = xlsx.write(wb, { bookType: 'xlsx', type: 'buffer' })
       res.setHeader(
         'Content-Disposition',

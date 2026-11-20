@@ -1,4 +1,5 @@
 import React from 'react'
+import { formatINR, formatINRCompact } from '../../utils/helper'
 import {
   XAxis,
   YAxis,
@@ -19,7 +20,7 @@ const CustomTooltip = ({ active, payload }) => {
         <p className="text-sm text-gray-600">
           Amount:{' '}
           <span className="font-medium text-xs text-gray-900">
-            ₹{payload[0].payload.amount}
+            {formatINR(payload[0].payload.amount)}
           </span>
         </p>
       </div>
@@ -60,6 +61,7 @@ const CustomLineChart = ({ data, stopColor, fillColor }) => {
             stroke="none"
           />
           <YAxis
+            tickFormatter={formatINRCompact}
             tick={{ fontSize: 12, fill: 'var(--text-secondary)' }}
             stroke="none"
           />

@@ -111,10 +111,14 @@ export const useIncome = () => {
     }
   }
 
-  const downloadIncomeReport = async () => {
+  const downloadIncomeReport = async ({ from, to } = {}) => {
+    const params = {}
+    if (from) params.from = from
+    if (to) params.to = to
     return await downloadFile(
       API_PATHS.INCOME.DOWNLOAD_INCOME_EXCEL,
-      'income-details.xlsx'
+      'income-details.xlsx',
+      params
     )
   }
 

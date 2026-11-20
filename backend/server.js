@@ -4,6 +4,7 @@ const cors = require('cors')
 const path = require('path')
 const mongoose = require('mongoose')
 const connectDB = require('./config/db')
+const { allowedOrigins } = require('./config/origins')
 const { closeRedis } = require('./config/redis')
 const setupCron = require('./cron')
 const authRoutes = require('./routes/authRoutes')
@@ -33,12 +34,6 @@ app.use(hpp())
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'))
 }
-
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'https://budgee-rho.vercel.app',
-  ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:5173']),
-].filter(Boolean)
 
 app.use(
   cors({

@@ -1,7 +1,13 @@
 const User = require('../models/User')
-const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const { toPublicUser } = require('../utils/userResponse')
+const {
+  signAccessToken,
+  verifyRefreshToken,
+  setRefreshCookie,
+  clearRefreshCookie,
+  readRefreshCookie,
+} = require('../utils/tokens')
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MIN_PASSWORD_LENGTH = 8
@@ -11,8 +17,14 @@ const MAX_NAME_LENGTH = 100
 // Used to equalise timing when the email doesn't exist (prevents user enumeration).
 const DUMMY_HASH = bcrypt.hashSync('timing-equaliser', 10)
 
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '10h' })
+// Short-lived access token in the body, long-lived refresh token in an httpOnly cookie.
+const issueSession = (res, user, status) => {
+  setRefreshCookie(res, user._id)
+  res.status(status).json({
+    id: user._id,
+    user: toPublicUser(user),
+    token: signAccessToken(user._id),
+  })
 }
 
 const normalizeEmail = (email) => String(email).trim().toLowerCase()
@@ -64,11 +76,7 @@ exports.registerUser = async (req, res) => {
       password,
     })
 
-    res.status(201).json({
-      id: user._id,
-      user: toPublicUser(user),
-      token: generateToken(user._id),
-    })
+    issueSession(res, user, 201)
   } catch (error) {
     if (error?.code === 11000) {
       return res.status(400).json({ message: 'Email already in use' })
@@ -97,11 +105,7 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' })
     }
 
-    res.status(200).json({
-      id: user._id,
-      user: toPublicUser(user),
-      token: generateToken(user._id),
-    })
+    issueSession(res, user, 200)
   } catch (error) {
     console.error('Login Error:', error)
     res.status(500).json({ message: 'Error logging in' })
@@ -121,4 +125,38 @@ exports.getUserInfo = async (req, res) => {
     console.error('GetUser Error:', error)
     res.status(500).json({ message: 'Error fetching user info' })
   }
+}
+
+// Exchanges a valid refresh cookie for a new access token (and rotates the cookie).
+exports.refreshToken = async (req, res) => {
+  const token = readRefreshCookie(req)
+  if (!token) {
+    return res.status(401).json({ message: 'No refresh token' })
+  }
+
+  try {
+    const decoded = verifyRefreshToken(token)
+    if (!decoded) {
+      clearRefreshCookie(res)
+      return res.status(401).json({ message: 'Invalid refresh token' })
+    }
+
+    // One DB read per refresh (every ~15 min) also catches deleted accounts.
+    const user = await User.findById(decoded.id).select('_id').lean()
+    if (!user) {
+      clearRefreshCookie(res)
+      return res.status(401).json({ message: 'User not found' })
+    }
+
+    setRefreshCookie(res, user._id)
+    res.json({ token: signAccessToken(user._id) })
+  } catch {
+    clearRefreshCookie(res)
+    res.status(401).json({ message: 'Invalid refresh token' })
+  }
+}
+
+exports.logoutUser = (req, res) => {
+  clearRefreshCookie(res)
+  res.status(200).json({ message: 'Logged out' })
 }
