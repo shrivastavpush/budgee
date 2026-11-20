@@ -22,6 +22,25 @@
     <link rel="manifest" href="/favicon/site.webmanifest" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f7f5" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply saved theme before first paint to avoid a light flash.
+      try {
+        var m = localStorage.getItem('budgee-theme-mode') || 'system'
+        var r = document.documentElement
+        r.dataset.theme =
+          m === 'system'
+            ? matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+            : m
+        r.dataset.accent =
+          localStorage.getItem('budgee-theme-accent') || 'emerald'
+        r.dataset.darkStyle =
+          localStorage.getItem('budgee-theme-dark-style') || 'soft'
+      } catch (e) {}
+    </script>
     <title>Budgee - Your Personal Budget Manager</title>
   </head>
 

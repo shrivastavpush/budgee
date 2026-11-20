@@ -1,3 +1,4 @@
+const { toFile } = require('@imagekit/nodejs')
 const imagekit = require('../config/imageKit')
 const User = require('../models/User')
 
@@ -33,9 +34,10 @@ exports.uploadImage = async (req, res) => {
   }
 
   try {
-    const result = await imagekit.upload({
-      file: req.file.buffer,
-      fileName: `${req.user.id}_${Date.now()}.${ext}`,
+    const fileName = `${req.user.id}_${Date.now()}.${ext}`
+    const result = await imagekit.files.upload({
+      file: await toFile(req.file.buffer, fileName),
+      fileName,
       folder: '/budgee/avatars',
     })
 

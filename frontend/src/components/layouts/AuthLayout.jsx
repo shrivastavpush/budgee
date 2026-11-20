@@ -44,10 +44,12 @@ const AuthLayout = ({ children }) => {
               <LuTrendingUp className="text-xl" /> Track income and expenses
             </li>
             <li className="flex items-center gap-3">
-              <LuArrowRight className="text-xl" /> Spot patterns with clear charts
+              <LuArrowRight className="text-xl" /> Spot patterns with clear
+              charts
             </li>
             <li className="flex items-center gap-3">
-              <LuShieldCheck className="text-xl" /> Secure sessions, exportable data
+              <LuShieldCheck className="text-xl" /> Secure sessions, exportable
+              data
             </li>
           </ul>
         </div>

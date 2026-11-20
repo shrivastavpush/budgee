@@ -1,6 +1,6 @@
 const xlsx = require('xlsx')
 const mongoose = require('mongoose')
-const { sanitize } = require('../middleware/sanitize')
+const sanitize = require('mongo-sanitize')
 const {
   parseTransactionDate,
   parsePageLimit,
@@ -20,9 +20,9 @@ const MAX_ICON_LENGTH = 200
 const safeCell = (v) =>
   typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? `'${v}` : v
 
-/** Sanitize then coerce to ObjectId so query filters never carry operator objects. */
-const toObjectId = (value) => {
-  const id = sanitize(value)
+/** Sanitize + typeof-check + ObjectId so query values are never operator objects. */
+const asObjectId = (raw) => {
+  const id = sanitize(raw)
   if (typeof id !== 'string' || !mongoose.isValidObjectId(id)) return null
   return new mongoose.Types.ObjectId(id)
 }
@@ -54,21 +54,11 @@ module.exports = ({ Model, field, label, entity }) => {
       message: `${label}, a positive amount, and a valid date are required`,
     })
 
-  const resolveIds = (req, res) => {
-    const userId = toObjectId(req.user?.id)
-    const _id = toObjectId(req.params?.id)
-    if (!userId || !_id) {
-      res.status(404).json({ message: `${entity} not found` })
-      return null
-    }
-    return { userId, _id }
-  }
-
   const add = async (req, res, next) => {
     try {
-      const data = parseBody(req.body)
+      const data = parseBody(sanitize(req.body) || {})
       if (!data) return invalid(res)
-      const userId = toObjectId(req.user?.id)
+      const userId = asObjectId(sanitize(req.user?.id))
       if (!userId) return res.status(401).json({ message: 'Unauthorized' })
       const doc = await Model.create({ userId, ...data })
       res.status(201).json(doc)
@@ -79,10 +69,10 @@ module.exports = ({ Model, field, label, entity }) => {
 
   const getAll = async (req, res, next) => {
     try {
-      const userId = toObjectId(req.user?.id)
+      const userId = asObjectId(sanitize(req.user?.id))
       if (!userId) return res.status(401).json({ message: 'Unauthorized' })
       const { page, limit, skip } = parsePageLimit(sanitize(req.query) || {})
-      const filter = { userId }
+      const filter = { userId: { $eq: userId } }
       const [data, total] = await Promise.all([
         Model.find(filter)
           .sort({ date: -1, _id: -1 })
@@ -106,10 +96,16 @@ module.exports = ({ Model, field, label, entity }) => {
   }
 
   const remove = async (req, res, next) => {
-    const ids = resolveIds(req, res)
-    if (!ids) return
+    const userId = asObjectId(sanitize(req.user?.id))
+    const _id = asObjectId(sanitize(req.params?.id))
+    if (!userId || !_id) {
+      return res.status(404).json({ message: `${entity} not found` })
+    }
     try {
-      const deleted = await Model.findOneAndDelete(ids).lean()
+      const deleted = await Model.findOneAndDelete({
+        _id: { $eq: _id },
+        userId: { $eq: userId },
+      }).lean()
       if (!deleted)
         return res.status(404).json({ message: `${entity} not found` })
       res.json({ message: `${entity} deleted successfully` })
@@ -119,12 +115,19 @@ module.exports = ({ Model, field, label, entity }) => {
   }
 
   const update = async (req, res, next) => {
-    const ids = resolveIds(req, res)
-    if (!ids) return
+    const userId = asObjectId(sanitize(req.user?.id))
+    const _id = asObjectId(sanitize(req.params?.id))
+    if (!userId || !_id) {
+      return res.status(404).json({ message: `${entity} not found` })
+    }
     try {
-      const data = parseBody(req.body)
+      const data = parseBody(sanitize(req.body) || {})
       if (!data) return invalid(res)
-      const doc = await Model.findOneAndUpdate(ids, data, { new: true }).lean()
+      const doc = await Model.findOneAndUpdate(
+        { _id: { $eq: _id }, userId: { $eq: userId } },
+        data,
+        { new: true }
+      ).lean()
       if (!doc) return res.status(404).json({ message: `${entity} not found` })
       res.json(serializeTransaction(doc))
     } catch (e) {
@@ -135,15 +138,19 @@ module.exports = ({ Model, field, label, entity }) => {
   // Optional ?from=YYYY-MM-DD&to=YYYY-MM-DD (both inclusive).
   const parseRange = (query) => {
     const range = {}
-    if (query.from !== undefined) {
-      const from = parseTransactionDate(query.from)
+    const fromRaw = sanitize(query.from)
+    const toRaw = sanitize(query.to)
+    if (fromRaw !== undefined) {
+      const from = parseTransactionDate(fromRaw)
       if (!from) return null
       range.$gte = from
     }
-    if (query.to !== undefined) {
-      const to = parseTransactionDate(query.to)
+    if (toRaw !== undefined) {
+      const to = parseTransactionDate(toRaw)
       if (!to) return null
-      if (/^\d{4}-\d{2}-\d{2}$/.test(query.to)) to.setUTCHours(23, 59, 59, 999)
+      if (typeof toRaw === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(toRaw)) {
+        to.setUTCHours(23, 59, 59, 999)
+      }
       range.$lte = to
     }
     if (range.$gte && range.$lte && range.$gte > range.$lte) return null
@@ -152,13 +159,15 @@ module.exports = ({ Model, field, label, entity }) => {
 
   const downloadExcel = async (req, res, next) => {
     try {
-      const userId = toObjectId(req.user?.id)
+      const userId = asObjectId(sanitize(req.user?.id))
       if (!userId) return res.status(401).json({ message: 'Unauthorized' })
       const range = parseRange(sanitize(req.query) || {})
       if (!range) {
         return res.status(400).json({ message: 'Invalid date range' })
       }
-      const filter = { userId }
+      // Build filter from sanitized literals only; do not sanitize() the filter
+      // itself (that would strip intentional $gte/$lte date bounds).
+      const filter = { userId: { $eq: userId } }
       if (Object.keys(range).length) filter.date = range
 
       const items = await Model.find(filter)
@@ -199,17 +208,15 @@ module.exports = ({ Model, field, label, entity }) => {
   // Days are bucketed in IST since the app is INR-only.
   const overview = async (req, res, next) => {
     try {
-      const userId = toObjectId(req.user?.id)
+      const userId = asObjectId(sanitize(req.user?.id))
       if (!userId) return res.status(401).json({ message: 'Unauthorized' })
-      const days = Math.min(
-        Math.max(parseInt(sanitize(req.query)?.days, 10) || 30, 1),
-        365
-      )
+      const daysRaw = sanitize(req.query?.days)
+      const days = Math.min(Math.max(parseInt(daysRaw, 10) || 30, 1), 365)
       const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
       const rows = await Model.aggregate([
         {
           $match: {
-            userId,
+            userId: { $eq: userId },
             date: { $gte: since },
           },
         },

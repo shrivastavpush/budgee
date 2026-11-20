@@ -1,9 +1,19 @@
-const ImageKit = require('imagekit')
+const ImageKit = require('@imagekit/nodejs')
 
-const imagekit = new ImageKit({
-  publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-  urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT,
-})
+let client
 
-module.exports = imagekit
+/** Lazily create the client so boot doesn't require ImageKit env vars. */
+const getImageKit = () => {
+  if (!client) {
+    client = new ImageKit({
+      privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+    })
+  }
+  return client
+}
+
+module.exports = {
+  files: {
+    upload: (...args) => getImageKit().files.upload(...args),
+  },
+}

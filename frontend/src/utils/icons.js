@@ -23,6 +23,7 @@ export {
   LuPalette,
   LuChevronDown,
   LuChartPie,
+  LuCheck,
   LuShieldCheck,
   LuCalendarDays,
 } from 'react-icons/lu'

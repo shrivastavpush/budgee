@@ -8,12 +8,9 @@ import {
 } from 'react-router-dom'
 import UserProvider from './context/UserContext'
 import { Toaster } from 'react-hot-toast'
-import GithubStarButton from './components/GithubStarButton'
 import { ThemeProvider } from './context/ThemeProvider'
 
 const Landing = lazy(() => import('./pages/Landing'))
-const Login = lazy(() => import('./pages/Auth/Login'))
-const SignUp = lazy(() => import('./pages/Auth/SignUp'))
 const Home = lazy(() => import('./pages/Dashboard/Home'))
 const Income = lazy(() => import('./pages/Dashboard/Income'))
 const Expense = lazy(() => import('./pages/Dashboard/Expense'))
@@ -53,29 +50,16 @@ const App = () => {
           <Suspense fallback={<PageFallback />}>
             <Routes>
               <Route
-                path="/"
                 element={
                   <PublicRoute>
                     <Landing />
                   </PublicRoute>
                 }
-              />
-              <Route
-                path="/login"
-                element={
-                  <PublicRoute>
-                    <Login />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="/signup"
-                element={
-                  <PublicRoute>
-                    <SignUp />
-                  </PublicRoute>
-                }
-              />
+              >
+                <Route path="/" />
+                <Route path="/login" />
+                <Route path="/signup" />
+              </Route>
               <Route
                 path="/dashboard"
                 element={
@@ -103,7 +87,6 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-          <GithubStarButton />
         </Router>
 
         <Toaster
