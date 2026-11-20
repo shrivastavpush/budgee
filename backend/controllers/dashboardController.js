@@ -21,97 +21,73 @@ const expenseFields = {
   icon: 1,
 }
 
-const windowSummary = (match, fields) => [
-  { $match: match },
+// One aggregation per collection (3 facets) instead of 3, halving round-trips.
+const summary = (userId, since, fields, type) => [
+  { $match: { userId } },
   {
     $facet: {
-      totals: [{ $group: { _id: null, total: { $sum: '$amount' } } }],
-      transactions: [
+      all: [{ $group: { _id: null, total: { $sum: '$amount' } } }],
+      windowTotal: [
+        { $match: { date: { $gte: since } } },
+        { $group: { _id: null, total: { $sum: '$amount' } } },
+      ],
+      windowTransactions: [
+        { $match: { date: { $gte: since } } },
         { $sort: { date: -1 } },
         { $limit: WINDOW_TRANSACTION_LIMIT },
         { $project: fields },
+      ],
+      recent: [
+        { $sort: { date: -1 } },
+        { $limit: RECENT_TRANSACTION_LIMIT },
+        { $project: { ...fields, type: { $literal: type } } },
       ],
     },
   },
 ]
 
+const DAY = 24 * 60 * 60 * 1000
+
 exports.getDashboardData = async (req, res) => {
   try {
     const userObjectId = new Types.ObjectId(req.user.id)
-    const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    const now = Date.now()
 
-    const [
-      totalIncome,
-      totalExpense,
-      last60DaysIncome,
-      last30DaysExpense,
-      recentIncome,
-      recentExpenses,
-    ] = await Promise.all([
-      Income.aggregate([
-        { $match: { userId: userObjectId } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
-      ]),
-      Expense.aggregate([
-        { $match: { userId: userObjectId } },
-        { $group: { _id: null, total: { $sum: '$amount' } } },
-      ]),
+    const [[income = {}], [expense = {}]] = await Promise.all([
       Income.aggregate(
-        windowSummary(
-          { userId: userObjectId, date: { $gte: sixtyDaysAgo } },
-          incomeFields
-        )
+        summary(userObjectId, new Date(now - 60 * DAY), incomeFields, 'income')
       ),
       Expense.aggregate(
-        windowSummary(
-          { userId: userObjectId, date: { $gte: thirtyDaysAgo } },
-          expenseFields
+        summary(
+          userObjectId,
+          new Date(now - 30 * DAY),
+          expenseFields,
+          'expense'
         )
       ),
-      Income.aggregate([
-        { $match: { userId: userObjectId } },
-        { $sort: { date: -1 } },
-        { $limit: RECENT_TRANSACTION_LIMIT },
-        {
-          $project: {
-            ...incomeFields,
-            type: { $literal: 'income' },
-          },
-        },
-      ]),
-      Expense.aggregate([
-        { $match: { userId: userObjectId } },
-        { $sort: { date: -1 } },
-        { $limit: RECENT_TRANSACTION_LIMIT },
-        {
-          $project: {
-            ...expenseFields,
-            type: { $literal: 'expense' },
-          },
-        },
-      ]),
     ])
 
-    const recentTransactions = [...recentIncome, ...recentExpenses]
+    const totalIncome = income.all?.[0]?.total || 0
+    const totalExpense = expense.all?.[0]?.total || 0
+
+    const recentTransactions = [
+      ...(income.recent || []),
+      ...(expense.recent || []),
+    ]
       .sort((a, b) => new Date(b.date) - new Date(a.date))
       .slice(0, RECENT_TRANSACTION_LIMIT)
 
-    const incomeWindow = last60DaysIncome[0] || {}
-    const expenseWindow = last30DaysExpense[0] || {}
-
     res.json({
-      totalBalance:
-        (totalIncome[0]?.total || 0) - (totalExpense[0]?.total || 0),
-      totalIncome: totalIncome[0]?.total || 0,
-      totalExpense: totalExpense[0]?.total || 0,
+      totalBalance: totalIncome - totalExpense,
+      totalIncome,
+      totalExpense,
       last30DaysExpenses: {
-        total: expenseWindow.totals?.[0]?.total || 0,
-        transactions: expenseWindow.transactions || [],
+        total: expense.windowTotal?.[0]?.total || 0,
+        transactions: expense.windowTransactions || [],
       },
       last60DaysIncome: {
-        total: incomeWindow.totals?.[0]?.total || 0,
-        transactions: incomeWindow.transactions || [],
+        total: income.windowTotal?.[0]?.total || 0,
+        transactions: income.windowTransactions || [],
       },
       recentTransactions,
     })

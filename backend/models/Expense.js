@@ -16,6 +16,7 @@ const ExpenseSchema = new mongoose.Schema(
 )
 
 // Index for optimizing dashboard queries
-ExpenseSchema.index({ userId: 1, date: -1 })
+// amount included so dashboard totals/windows are served from the index alone
+ExpenseSchema.index({ userId: 1, date: -1, amount: 1 })
 
 module.exports = mongoose.model('Expense', ExpenseSchema)

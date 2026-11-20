@@ -1,46 +1,31 @@
 const rateLimit = require('express-rate-limit')
+const { createLimiterStore } = require('../config/redis')
 
-// Rate limiter for authentication routes (more strict)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 requests per windowMs
-  message: 'Too many login attempts, please try again after 15 minutes',
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: false, // Count successful attempts too
+// Uses Redis when REDIS_URL is set (shared across instances), else in-memory.
+const base = { standardHeaders: true, legacyHeaders: false }
+
+const make = (name, options) =>
+  rateLimit({ ...base, ...options, store: createLimiterStore(name) })
+
+// Brute-force protection: only failed attempts count, keyed by IP.
+const authLimiter = make('auth', {
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  skipSuccessfulRequests: true,
+  message: { message: 'Too many attempts, please try again after 15 minutes' },
 })
 
-// Rate limiter for database operations
-const dbLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 30, // Limit each IP to 30 DB operations per minute
-  message: 'Too many database operations, please try again after a minute',
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipFailedRequests: false, // Count failed attempts too
+// General API traffic (dashboard loads fire several calls per page view).
+const apiLimiter = make('api', {
+  windowMs: 15 * 60 * 1000,
+  limit: 600,
+  message: { message: 'Too many requests, please try again later' },
 })
 
-// Rate limiter for regular API routes
-const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 15 minutes',
-  standardHeaders: true,
-  legacyHeaders: false,
+const uploadLimiter = make('upload', {
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  message: { message: 'Too many upload attempts, please try again later' },
 })
 
-// Rate limiter for file upload routes
-const uploadLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // Limit each IP to 10 uploads per hour
-  message: 'Too many upload attempts, please try again after an hour',
-  standardHeaders: true,
-  legacyHeaders: false,
-})
-
-module.exports = {
-  authLimiter,
-  dbLimiter,
-  apiLimiter,
-  uploadLimiter,
-}
+module.exports = { authLimiter, apiLimiter, uploadLimiter }

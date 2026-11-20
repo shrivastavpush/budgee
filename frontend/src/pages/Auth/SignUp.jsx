@@ -25,8 +25,6 @@ const SignUp = () => {
   const handleSignup = async (e) => {
     e.preventDefault()
 
-    let profileImageUrl = ''
-
     if (!fullName) {
       toast.error('Please enter your name')
       return
@@ -46,23 +44,26 @@ const SignUp = () => {
 
     // Signup API Call
     try {
-      //Uploading image if available
-      if (profilePic) {
-        const imageUploadRes = await uploadImage(profilePic, fullName)
-        profileImageUrl = imageUploadRes.imageUrl || ''
-      }
-
       const response = await axiosInstance.post(API_PATHS.AUTH.REGISTER, {
         fullName,
         email,
         password,
-        profileImageUrl,
       })
 
       const { token, user } = response.data
       if (token) {
         localStorage.setItem('token', token)
-        updateUser(user)
+        let finalUser = user
+        // Upload needs auth, so it happens right after registration.
+        if (profilePic) {
+          try {
+            const { imageUrl } = await uploadImage(profilePic)
+            finalUser = { ...user, profileImageUrl: imageUrl }
+          } catch {
+            toast.error('Profile photo upload failed. You can retry later.')
+          }
+        }
+        updateUser(finalUser)
         navigate('/dashboard')
         toast.success('Signup successful')
       }

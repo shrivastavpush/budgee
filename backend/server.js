@@ -2,7 +2,9 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const path = require('path')
+const mongoose = require('mongoose')
 const connectDB = require('./config/db')
+const { closeRedis } = require('./config/redis')
 const setupCron = require('./cron')
 const authRoutes = require('./routes/authRoutes')
 const incomeRoutes = require('./routes/incomeRoutes')
@@ -56,7 +58,8 @@ app.use(
 
 app.options(/(.*)/, cors())
 
-app.use(express.json())
+app.disable('x-powered-by')
+app.use(express.json({ limit: '10kb' }))
 app.use(sanitizeRequest)
 
 app.use('/api/v1/auth', authRoutes)
@@ -70,6 +73,11 @@ app.get('/', (req, res) => {
   res.send('This is budgee backend - with realtime data update')
 })
 
+app.get('/health', (req, res) => {
+  const ok = mongoose.connection.readyState === 1
+  res.status(ok ? 200 : 503).json({ status: ok ? 'ok' : 'unavailable' })
+})
+
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' })
 })
@@ -77,6 +85,15 @@ app.use((req, res) => {
 app.use((err, req, res, _next) => {
   if (err.message === 'Not allowed by CORS') {
     return res.status(403).json({ message: 'Not allowed by CORS' })
+  }
+
+  if (err.type === 'entity.too.large' || err.type === 'entity.parse.failed') {
+    return res
+      .status(err.status || 400)
+      .json({ message: 'Invalid request body' })
+  }
+  if (err.name === 'MulterError' || err.message?.startsWith('Only .jpeg')) {
+    return res.status(400).json({ message: err.message })
   }
 
   console.error(err.stack)
@@ -90,9 +107,23 @@ const start = async () => {
   try {
     await connectDB()
     setupCron()
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`App listening on port ${PORT}`)
     })
+    server.keepAliveTimeout = 65 * 1000 // above typical LB idle timeout (60s)
+    server.headersTimeout = 66 * 1000
+
+    const shutdown = (signal) => {
+      console.log(`${signal} received, shutting down`)
+      server.close(async () => {
+        await mongoose.connection.close()
+        await closeRedis().catch(() => {})
+        process.exit(0)
+      })
+      setTimeout(() => process.exit(1), 10000).unref()
+    }
+    process.on('SIGTERM', () => shutdown('SIGTERM'))
+    process.on('SIGINT', () => shutdown('SIGINT'))
   } catch (error) {
     console.log('Error connecting MongoDB', error)
     process.exit(1)

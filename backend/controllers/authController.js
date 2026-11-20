@@ -12,7 +12,7 @@ const generateToken = (id) => {
 const normalizeEmail = (email) => String(email).trim().toLowerCase()
 
 exports.registerUser = async (req, res) => {
-  const { fullName, email, password, profileImageUrl } = req.body
+  const { fullName, email, password } = req.body
 
   if (!fullName || !email || !password) {
     return res.status(400).json({ message: 'All fields are required' })
@@ -39,7 +39,6 @@ exports.registerUser = async (req, res) => {
       fullName: String(fullName).trim(),
       email: normalizedEmail,
       password,
-      profileImageUrl,
     })
 
     res.status(201).json({
@@ -48,10 +47,11 @@ exports.registerUser = async (req, res) => {
       token: generateToken(user._id),
     })
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(400).json({ message: 'Email already in use' })
+    }
     console.error('Register Error:', error)
-    res
-      .status(500)
-      .json({ message: 'Error registering user', error: error.message })
+    res.status(500).json({ message: 'Error registering user' })
   }
 }
 
@@ -67,12 +67,8 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
-    const user = await User.findOne({
-      email: normalizeEmail(email),
-    }).collation({
-      locale: 'en',
-      strength: 2,
-    })
+    // Emails are stored lowercase, so a plain lookup uses the unique index.
+    const user = await User.findOne({ email: normalizeEmail(email) })
     if (!user || !(await user.comparePassword(password))) {
       return res.status(400).json({ message: 'Invalid credentials' })
     }
@@ -84,13 +80,13 @@ exports.loginUser = async (req, res) => {
     })
   } catch (error) {
     console.error('Login Error:', error)
-    res.status(500).json({ message: 'Error logging in', error: error.message })
+    res.status(500).json({ message: 'Error logging in' })
   }
 }
 
 exports.getUserInfo = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password')
+    const user = await User.findById(req.user.id).select('-password').lean()
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' })
@@ -98,8 +94,7 @@ exports.getUserInfo = async (req, res) => {
 
     res.status(200).json(user)
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: 'Error fetching user info', error: error.message })
+    console.error('GetUser Error:', error)
+    res.status(500).json({ message: 'Error fetching user info' })
   }
 }

@@ -16,6 +16,7 @@ const IncomeSchema = new mongoose.Schema(
 )
 
 // Index for optimizing dashboard queries
-IncomeSchema.index({ userId: 1, date: -1 })
+// amount included so dashboard totals/windows are served from the index alone
+IncomeSchema.index({ userId: 1, date: -1, amount: 1 })
 
 module.exports = mongoose.model('Income', IncomeSchema)

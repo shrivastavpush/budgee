@@ -1,9 +1,19 @@
 const imagekit = require('../config/imageKit')
+const User = require('../models/User')
 
 const MIME_TO_EXT = {
   'image/jpeg': 'jpg',
   'image/jpg': 'jpg',
   'image/png': 'png',
+}
+
+// Verify magic bytes so a spoofed Content-Type can't smuggle other file types.
+const hasValidSignature = (buf, ext) => {
+  if (!buf || buf.length < 8) return false
+  if (ext === 'png') {
+    return buf.subarray(0, 8).equals(Buffer.from('89504e470d0a1a0a', 'hex'))
+  }
+  return buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff
 }
 
 exports.uploadImage = async (req, res) => {
@@ -18,32 +28,25 @@ exports.uploadImage = async (req, res) => {
       .json({ message: 'Only .jpeg, .jpg and .png formats are allowed' })
   }
 
+  if (!hasValidSignature(req.file.buffer, ext)) {
+    return res.status(400).json({ message: 'Invalid image file' })
+  }
+
   try {
-    const username = req.body.username
-      ? req.body.username.replace(/[^a-zA-Z0-9]/g, '_')
-      : 'user'
-    const now = new Date()
-    const date =
-      String(now.getDate()).padStart(2, '0') +
-      String(now.getMonth() + 1).padStart(2, '0') +
-      now.getFullYear()
-    const time =
-      String(now.getHours()).padStart(2, '0') +
-      String(now.getMinutes()).padStart(2, '0')
-
-    const customFileName = `${username}_${date}_${time}.${ext}`
-
     const result = await imagekit.upload({
       file: req.file.buffer,
-      fileName: customFileName,
+      fileName: `${req.user.id}_${Date.now()}.${ext}`,
       folder: '/budgee/avatars',
     })
+
+    await User.updateOne(
+      { _id: req.user.id },
+      { profileImageUrl: result.url }
+    )
 
     res.status(200).json({ imageUrl: result.url })
   } catch (error) {
     console.error('ImageKit Upload Error:', error)
-    res
-      .status(500)
-      .json({ message: 'Image upload failed', error: error.message })
+    res.status(500).json({ message: 'Image upload failed' })
   }
 }
