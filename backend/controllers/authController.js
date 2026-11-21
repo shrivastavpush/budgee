@@ -98,8 +98,16 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
-    // Emails are stored lowercase, so a plain lookup uses the unique index.
-    const user = await User.findOne({ email: normalizeEmail(email) })
+    const normalizedEmail = normalizeEmail(email)
+    let user = await User.findOne({ email: normalizedEmail })
+    if (!user) {
+      // Older accounts may predate the schema's lowercase email normalization.
+      user = await User.findOne({ email: normalizedEmail }).collation({
+        locale: 'en',
+        strength: 2,
+      })
+    }
+
     const valid = await bcrypt.compare(password, user?.password ?? DUMMY_HASH)
     if (!user || !valid) {
       return res.status(400).json({ message: 'Invalid credentials' })
